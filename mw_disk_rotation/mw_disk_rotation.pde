@@ -16,7 +16,7 @@ float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
 float periodSunInSeconds = 10.0;
-float duration = 4.5;  // animation duration in units of Sun rotation period
+float duration = 5.5;  // animation duration in units of Sun rotation period
 int fRate = 60;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 float phiDotScaling = fRate * periodSunInSeconds;  // Scale factor for rotation curve angular velocities, such that at solar radius 1 
@@ -33,13 +33,14 @@ float[] xp = new float[nParticles];
 float[] yp = new float[nParticles];
 float[] pml = new float[nParticles];
 float[] phip = new float[nParticles];
+float[] galon = new float[nParticles];
 float[] distp = new float[nParticles];
 float maxpml, minpml;
-float vxp, vyp;
+float vxp, vyp, xplotp, yplotp;
 float phiSun, xsun, ysun, vxsun, vysun;
 float phiZeroSun = PI;
 float phiDotSun = -TWO_PI;
-float galon, angle;
+float angle, galontext;
 
 PMatrix2D rightHanded2DtoP2D = new PMatrix2D(1,  0, 0, 
                                              0, -1, 0);
@@ -95,10 +96,10 @@ void draw() {
       rOuter*cos(phiSun-HALF_PI)*sizeUnit, rOuter*sin(phiSun-HALF_PI)*sizeUnit);
   }
   if (time>3.5 && time<=3.75) {
-    translate((time-3.5)/0.25*sunRadius*sizeUnit, 0);
+    translate((time-3.5)/0.25*sunRadius*sizeUnit, -(time-3.5)/0.25*0.5*sunRadius*sizeUnit);
   }
   if (time>3.75) {
-    translate(sunRadius*sizeUnit, 0);
+    translate(sunRadius*sizeUnit, -0.5*sunRadius*sizeUnit);
   }
   fill(0);
   noStroke();
@@ -114,14 +115,16 @@ void draw() {
       distp[i] = sqrt(pow(xp[i]-xsun,2) + pow(yp[i]-ysun,2));
       vxp = -r[i]*phiDot[i]*sin(phip[i]);
       vyp = r[i]*phiDot[i]*cos(phip[i]);
-      galon = atan2(yp[i]-ysun, xp[i]-xsun);
-      pml[i] = (-sin(galon)*(vxp-vxsun) + cos(galon)*(vyp-vysun))/(4.74*distp[i]);
+      galon[i] = atan2(yp[i]-ysun, xp[i]-xsun);
+      pml[i] = (-sin(galon[i])*(vxp-vxsun) + cos(galon[i])*(vyp-vysun))/(4.74*distp[i]);
     }
   }
   maxpml = max(pml);
   minpml = min(pml);
   for (int i=0; i<nParticles; i++) {
-    if (time>2) {
+    if (time<=2) {
+      ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
+    } else if (time>2 && time<=4.25) {
       pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (time>3.25 && time<=3.5 && (distp[i]<4 || distp[i]>5)) {
@@ -130,9 +133,30 @@ void draw() {
       if (time>3.5 && (distp[i]<4 || distp[i]>5)) {
         fill(0,0);
       }
+      ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
+    } else if (time>4.25 && time<=4.75 && (distp[i]>=4 && distp[i]<=5)) {
+      pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
+      if (galon[i]<0) {
+        xplotp = xp[i]+(xsun-4*PI-xp[i]+(galon[i]+TWO_PI)*4)*(time-4.25)/0.5;
+      } else {
+        xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-4.25)/0.5;
+      }
+      yplotp = yp[i]+(ysun+11-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml))*(time-4.25)/0.5;
+      ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
+    } else if (time>4.75 && (distp[i]>=4 && distp[i]<=5)) {
+      pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
+      if (galon[i]<0) {
+        xplotp = xsun-4*PI+(galon[i]+TWO_PI)*4;
+      } else {
+        xplotp = xsun-4*PI+galon[i]*4;
+      }
+      yplotp = ysun+11+4*(pml[i]-minpml)/(maxpml-minpml);
+      ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     }
-    ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
   }
+  
   fill(255,127,14);
   ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
   
@@ -142,26 +166,35 @@ void draw() {
     fill(0);
     strokeWeight(2);
     for (int k=0; k<12; k++) {
-      galon = k*30;
-      angle = radians(galon);
+      galontext = k*30;
+      angle = radians(galontext);
       line((xsun+6*cos(angle))*sizeUnit, (ysun+6*sin(angle))*sizeUnit, 
-        (xsun+8*cos(angle))*sizeUnit, (ysun+8*sin(angle))*sizeUnit);
+        (xsun+7*cos(angle))*sizeUnit, (ysun+7*sin(angle))*sizeUnit);
       pushMatrix();
       applyMatrix(rightHanded2DtoP2D);
-      if (galon>270 || galon<90) {
+      if (galontext>270 || galontext<90) {
         textAlign(LEFT, CENTER);
-      } else if (galon>90 && galon<270) {
+      } else if (galontext>90 && galontext<270) {
         textAlign(RIGHT, CENTER);
-      } else if (galon==90) {
+      } else if (galontext==90) {
         textAlign(CENTER, BOTTOM);
       } else {
         textAlign(CENTER, TOP);
       }
-      text("l="+String.valueOf(int(galon)), (xsun+8.1*cos(angle))*sizeUnit, -(ysun+8.1*sin(angle))*sizeUnit);
+      text("l="+String.valueOf(int(galontext)), (xsun+7.2*cos(angle))*sizeUnit, -(ysun+7.2*sin(angle))*sizeUnit);
       popMatrix();
     }
     popStyle();
   }
+  
+  pushStyle();
+  stroke(0);
+  strokeWeight(2);
+  noFill();
+  if (time>4.25) {
+    rect((xsun-4*PI)*sizeUnit, (ysun+10.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit); 
+  }
+  popStyle();
   
   popStyle();
   popMatrix();
