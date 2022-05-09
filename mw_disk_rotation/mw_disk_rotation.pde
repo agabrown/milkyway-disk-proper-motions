@@ -1,5 +1,19 @@
 /**
- * Create an animation that illustrates differential rotation in the disk of the Milky Way.
+ * Create an animation that illustrates differential rotation in the disk of the Milky Way and how this gives
+ * rise to the sine-wave like variation of the value of the proper motion in galactic longitude as a function
+ * of galactic longitude.
+ *
+ * Animation steps
+ * ---------------
+ *
+ * 1. Start with artist's impression image of Milky Way (TODO)
+ * 2. Overlay the simulated stars
+ * 3. Show solid body rotation
+ * 4. Show differential rotation
+ * 5. Colour code stars by the value of proper motion in l
+ * 6. Focus on ring of stars around the sun and indicate the values of l around the ring
+ * 7. Move the stars in the ring to a pml vs l plot
+ * 8. Show the corresponding Gaia plot for comparison (TODO)
  *
  * Anthony Brown May 2022 - May 2022
  */
@@ -10,17 +24,16 @@ int timeStep = -1;
 
 float sunRadius = 8.277; // Distance from sun to Galactic centre in kpc
 float sunVcirc = 234.0;  // Circular velocity at position of the sun in km/s
-float slopeVcirc = -3.6; // Slope of rotation curve near Sun in km/s/kpc
 float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 10.0;
-float duration = 5.5;  // animation duration in units of Sun rotation period
-int fRate = 60;
+float periodSunInSeconds = 5.0;
+float numSunRevolutions = 5.5;  // animation duration in units of Sun's revolution period
+int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
-float phiDotScaling = fRate * periodSunInSeconds;  // Scale factor for rotation curve angular velocities, such that at solar radius 1 
-                                                   //revolution is the specified number of seconds
+float ROTATION_DURATION = 3;
+
 int sizeUnit;
 int diskRadius = 16;    // Milky Way disk radius in kpc (distance out to which particles are drawn)
 float particleRadius;
@@ -55,6 +68,9 @@ void setup() {
   frameRate(fRate);
   ellipseMode(RADIUS);
   
+  /*
+   * Simulate star particles uniformly distributed between galactocentric radii rInner and rOuter.
+   */
   float rOutSqr = rOuter*rOuter;
   float rInSqr = rInner*rInner;
   for (int i=0; i<nParticles; i++) {
@@ -70,11 +86,18 @@ void draw() {
   background(192);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
-  if (time>duration) {
+  
+  /*
+   * Stop after a time equal to "numSunRevolutions" revolutions of the sun around the milky way.
+   */
+  if (time>numSunRevolutions) {
     exit();
   }
   
-  if (time<=3) {
+  /*
+   * Only animate milky way rotation for ROTATION_DURATION sun revolutions.
+   */
+  if (time <= ROTATION_DURATION) {
     phiSun = phiZeroSun + time*phiDotSun;
   }
   xsun = sunRadius * cos(phiSun);
@@ -96,10 +119,10 @@ void draw() {
       rOuter*cos(phiSun-HALF_PI)*sizeUnit, rOuter*sin(phiSun-HALF_PI)*sizeUnit);
   }
   if (time>3.5 && time<=3.75) {
-    translate((time-3.5)/0.25*sunRadius*sizeUnit, -(time-3.5)/0.25*0.5*sunRadius*sizeUnit);
+    translate((time-3.5)/0.25*sunRadius*sizeUnit, -(time-3.5)/0.25*0.75*sunRadius*sizeUnit);
   }
   if (time>3.75) {
-    translate(sunRadius*sizeUnit, -0.5*sunRadius*sizeUnit);
+    translate(sunRadius*sizeUnit, -0.75*sunRadius*sizeUnit);
   }
   fill(0);
   noStroke();
@@ -142,7 +165,7 @@ void draw() {
       } else {
         xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-4.25)/0.5;
       }
-      yplotp = yp[i]+(ysun+11-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml))*(time-4.25)/0.5;
+      yplotp = yp[i]+(ysun+14-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml))*(time-4.25)/0.5;
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     } else if (time>4.75 && (distp[i]>=4 && distp[i]<=5)) {
       pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
@@ -152,7 +175,7 @@ void draw() {
       } else {
         xplotp = xsun-4*PI+galon[i]*4;
       }
-      yplotp = ysun+11+4*(pml[i]-minpml)/(maxpml-minpml);
+      yplotp = ysun+14+4*(pml[i]-minpml)/(maxpml-minpml);
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     }
   }
@@ -178,7 +201,7 @@ void draw() {
         textAlign(RIGHT, CENTER);
       } else if (galontext==90) {
         textAlign(CENTER, BOTTOM);
-      } else {
+      } else if (galontext==270) {
         textAlign(CENTER, TOP);
       }
       text("l="+String.valueOf(int(galontext)), (xsun+7.2*cos(angle))*sizeUnit, -(ysun+7.2*sin(angle))*sizeUnit);
@@ -192,7 +215,23 @@ void draw() {
   strokeWeight(2);
   noFill();
   if (time>4.25) {
-    rect((xsun-4*PI)*sizeUnit, (ysun+10.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit); 
+    rect((xsun-4*PI)*sizeUnit, (ysun+13.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
+    pushStyle();
+    fill(0);
+    pushMatrix();
+    applyMatrix(rightHanded2DtoP2D);
+    for (int k=0; k<4; k++) {
+      textAlign(CENTER, BOTTOM);
+      text(String.valueOf(k*90), (xsun-4*PI+k/4.0*8*PI)*sizeUnit, -((ysun+13.0)*sizeUnit-30));
+    }
+    textAlign(CENTER, BOTTOM);
+    text("Sky position", xsun*sizeUnit, -((ysun+13.0)*sizeUnit-60));
+    translate((xsun-4*PI)*sizeUnit-30, -((ysun+14.0)*sizeUnit));
+    rotate(-HALF_PI);
+    textAlign(LEFT, CENTER);
+    text("speed across sky", 0, 0);
+    popMatrix();
+    popStyle();
   }
   popStyle();
   
