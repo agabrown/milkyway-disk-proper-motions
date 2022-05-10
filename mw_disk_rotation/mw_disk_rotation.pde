@@ -32,7 +32,24 @@ float periodSunInSeconds = 5.0;
 float numSunRevolutions = 5.5;  // animation duration in units of Sun's revolution period
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
-float ROTATION_DURATION = 3;
+
+/*
+ * The animation sequence durations in units of the sun's revolution period.
+ */
+float SOLIDBODY_END = 1;
+float PMCOLORS_START = 2;
+float ROTATION_END = 3;
+float POSTROTATION_PAUSE_END = 3.25;
+float FOCUSONRING_END = 3.5;
+float TRANSLATERING_END = 3.75;
+float RINGTOPLOT_START = 4.25;
+float RINGTOPLOT_END = 4.75;
+
+/*
+ * Inner and our radii of ring of stars around sun for pml vs l plot, in kpc
+ */
+float ringInner = 4;
+float ringOuter = 5;
 
 int sizeUnit;
 int diskRadius = 16;    // Milky Way disk radius in kpc (distance out to which particles are drawn)
@@ -97,7 +114,7 @@ void draw() {
   /*
    * Only animate milky way rotation for ROTATION_DURATION sun revolutions.
    */
-  if (time <= ROTATION_DURATION) {
+  if (time <= ROTATION_END) {
     phiSun = phiZeroSun + time*phiDotSun;
   }
   xsun = sunRadius * cos(phiSun);
@@ -112,29 +129,30 @@ void draw() {
   stroke(0);
   strokeWeight(2);
   //line(0, 0, rOuter*cos(phiSun)*sizeUnit, rOuter*sin(phiSun)*sizeUnit);
-  if (time<=3.5) {
+  if (time<=FOCUSONRING_END) {
     line(rOuter*cos(phiSun+PI)*sizeUnit, rOuter*sin(phiSun+PI)*sizeUnit, 
       rOuter*cos(phiSun)*sizeUnit, rOuter*sin(phiSun)*sizeUnit);
     line(rOuter*cos(phiSun+HALF_PI)*sizeUnit, rOuter*sin(phiSun+HALF_PI)*sizeUnit,
       rOuter*cos(phiSun-HALF_PI)*sizeUnit, rOuter*sin(phiSun-HALF_PI)*sizeUnit);
   }
-  if (time>3.5 && time<=3.75) {
-    translate((time-3.5)/0.25*sunRadius*sizeUnit, -(time-3.5)/0.25*0.75*sunRadius*sizeUnit);
+  if (time>FOCUSONRING_END && time<=TRANSLATERING_END) {
+    translate((time-FOCUSONRING_END)/(TRANSLATERING_END-FOCUSONRING_END)*sunRadius*sizeUnit,
+    -(time-FOCUSONRING_END)/(TRANSLATERING_END-FOCUSONRING_END)*0.75*sunRadius*sizeUnit);
   }
-  if (time>3.75) {
+  if (time>TRANSLATERING_END) {
     translate(sunRadius*sizeUnit, -0.75*sunRadius*sizeUnit);
   }
   fill(0);
   noStroke();
   for (int i=0; i<nParticles; i++) {
-    if (time<1) {
+    if (time <= SOLIDBODY_END) {
       phip[i] = phiZero[i] + time*phiDotSun;
     } else if (time <=3) {
       phip[i] = phiZero[i] + (time-1)*phiDot[i];
     }
     xp[i] = r[i] * cos(phip[i]);
     yp[i] = r[i] * sin(phip[i]);
-    if (time>2) {
+    if (time > PMCOLORS_START) {
       distp[i] = sqrt(pow(xp[i]-xsun,2) + pow(yp[i]-ysun,2));
       vxp = -r[i]*phiDot[i]*sin(phip[i]);
       vyp = r[i]*phiDot[i]*cos(phip[i]);
@@ -145,29 +163,32 @@ void draw() {
   maxpml = max(pml);
   minpml = min(pml);
   for (int i=0; i<nParticles; i++) {
-    if (time<=2) {
+    if (time <= PMCOLORS_START) {
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
-    } else if (time>2 && time<=4.25) {
+    } else if (time > PMCOLORS_START && time<=RINGTOPLOT_START) {
       pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
-      if (time>3.25 && time<=3.5 && (distp[i]<4 || distp[i]>5)) {
-        fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue(), 255*(1.0-(time-3.25)/0.25));
+      if (time>=POSTROTATION_PAUSE_END && time<=FOCUSONRING_END && (distp[i]<ringInner || distp[i]>ringOuter)) {
+        fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue(), 
+        255*(1.0-(time-POSTROTATION_PAUSE_END)/(POSTROTATION_PAUSE_END-ROTATION_END)));
       }
-      if (time>3.5 && (distp[i]<4 || distp[i]>5)) {
+      if (time>FOCUSONRING_END && (distp[i]<ringInner || distp[i]>ringOuter)) {
         fill(0,0);
       }
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
-    } else if (time>4.25 && time<=4.75 && (distp[i]>=4 && distp[i]<=5)) {
+    } else if (time>RINGTOPLOT_START && time<=RINGTOPLOT_END && distp[i]>=ringInner && distp[i]<=ringOuter) {
       pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
-        xplotp = xp[i]+(xsun-4*PI-xp[i]+(galon[i]+TWO_PI)*4)*(time-4.25)/0.5;
+        xplotp = xp[i]+(xsun-4*PI-xp[i]+(galon[i]+TWO_PI)*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       } else {
-        xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-4.25)/0.5;
+        xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       }
-      yplotp = yp[i]+(ysun+14-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml))*(time-4.25)/0.5;
+      yplotp = yp[i]+(ysun+14-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml)) * 
+        (time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
+      ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
-    } else if (time>4.75 && (distp[i]>=4 && distp[i]<=5)) {
+    } else if (time>RINGTOPLOT_END && distp[i]>=ringInner && distp[i]<=ringOuter) {
       pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
@@ -176,6 +197,7 @@ void draw() {
         xplotp = xsun-4*PI+galon[i]*4;
       }
       yplotp = ysun+14+4*(pml[i]-minpml)/(maxpml-minpml);
+      ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     }
   }
@@ -183,7 +205,7 @@ void draw() {
   fill(255,127,14);
   ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
   
-  if (time>3.75) {
+  if (time>TRANSLATERING_END) {
     pushStyle();
     stroke(0);
     fill(0);
@@ -214,7 +236,7 @@ void draw() {
   stroke(0);
   strokeWeight(2);
   noFill();
-  if (time>4.25) {
+  if (time>RINGTOPLOT_START) {
     rect((xsun-4*PI)*sizeUnit, (ysun+13.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
     pushStyle();
     fill(0);
@@ -239,11 +261,11 @@ void draw() {
   popMatrix();
   
   fill(0);
-  if (time<1) {
+  if (time <= SOLIDBODY_END) {
     text("Solid Body rotation", 20, 28);
-  } else if (time>=1 && time<2) {
+  } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
     text("Differential rotation", 20, 28);
-  } else if (time>=2 && time<3) {
+  } else if (time > PMCOLORS_START && time <= ROTATION_END) {
     text("Colour: speed of motion across the sky", 20, 28);
   }
   
