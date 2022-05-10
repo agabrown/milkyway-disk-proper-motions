@@ -316,11 +316,11 @@ void draw() {
    */
   fill(0);
   if (time <= SOLIDBODY_END) {
-    text("Motions of the stars if the Milky Way would rotate as a solid body", 20, 28, 5*sizeUnit, 3*sizeUnit);
+    text("Motions of the stars if the Milky Way would rotate as a solid body", 20, 28, 8*sizeUnit, 5*sizeUnit);
   } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-    text("In reality stars move in a differential rotation pattern", 20, 28);
+    text("In reality stars move in a differential rotation pattern", 20, 28, 8*sizeUnit, 5*sizeUnit);
   } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-    text("Now the stars are colour coded according to the speed of their motion across the sky", 20, 28);
+    text("Now the stars are colour coded according to the speed of their motion across the sky", 20, 28, 8*sizeUnit, 5*sizeUnit);
   }
   
   //saveFrame("../frames/frame-######.png");
