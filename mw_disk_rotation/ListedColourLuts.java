@@ -37,6 +37,11 @@ public enum ListedColourLuts {
      */
     CIVIDIS("Colour table for MatplotLib's cividis colour map", ListedColourData.CIVIDIS_DATA) {
     },
+    /**
+     * The PiYG colour map from Matplotlib.
+     */
+    PIYG("Colour table for MatplotLib's PiYG colour map", ListedColourData.PIYG_DATA) {
+    },
     ;
 
     /**

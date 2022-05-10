@@ -19,6 +19,12 @@
  */
  
 import java.awt.Color;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.stream.IntStream;
 
 int timeStep = -1;
 
@@ -29,7 +35,6 @@ float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
 float periodSunInSeconds = 5.0;
-float numSunRevolutions = 5.5;  // animation duration in units of Sun's revolution period
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
@@ -44,6 +49,10 @@ float FOCUSONRING_END = 3.5;
 float TRANSLATERING_END = 3.75;
 float RINGTOPLOT_START = 4.25;
 float RINGTOPLOT_END = 4.75;
+/*
+ * animation duration in units of Sun's revolution period
+ */
+float DURATION_REVS = 5.5;
 
 /*
  * Inner and our radii of ring of stars around sun for pml vs l plot, in kpc
@@ -55,13 +64,14 @@ int sizeUnit;
 int diskRadius = 16;    // Milky Way disk radius in kpc (distance out to which particles are drawn)
 float particleRadius;
 
-int nParticles = 5000;
+int nParticles = 7000;
 float[] r = new float[nParticles];
 float[] phiZero = new float[nParticles];
 float[] phiDot = new float[nParticles];
 float[] xp = new float[nParticles];
 float[] yp = new float[nParticles];
 float[] pml = new float[nParticles];
+float[] pmlscaled = new float[nParticles];
 float[] phip = new float[nParticles];
 float[] galon = new float[nParticles];
 float[] distp = new float[nParticles];
@@ -75,7 +85,7 @@ float angle, galontext;
 PMatrix2D rightHanded2DtoP2D = new PMatrix2D(1,  0, 0, 
                                              0, -1, 0);
 
-ListedColourLuts lut = ListedColourLuts.VIRIDIS;
+ColourLookUpTable lut = ColourLuts.PLASMA.getLut();
 Color pmlColor;
 
 void setup() {
@@ -107,12 +117,12 @@ void draw() {
   /*
    * Stop after a time equal to "numSunRevolutions" revolutions of the sun around the milky way.
    */
-  if (time>numSunRevolutions) {
+  if (time > DURATION_REVS) {
     exit();
   }
   
   /*
-   * Only animate milky way rotation for ROTATION_DURATION sun revolutions.
+   * Only animate milky way rotation up to ROTATION_END sun revolutions.
    */
   if (time <= ROTATION_END) {
     phiSun = phiZeroSun + time*phiDotSun;
@@ -124,17 +134,25 @@ void draw() {
 
   pushMatrix();
   pushStyle();
-  applyTransformation(width/2, height/2);
+  applyTransformation(width/2+sizeUnit, height/2);
   
   stroke(0);
   strokeWeight(2);
-  //line(0, 0, rOuter*cos(phiSun)*sizeUnit, rOuter*sin(phiSun)*sizeUnit);
+
+  /*
+   * Show Galactic coordinate axes (co-rotating with Sun) up to the moment we 
+   * focus on the ring of stars around the sun.
+   */
   if (time<=FOCUSONRING_END) {
     line(rOuter*cos(phiSun+PI)*sizeUnit, rOuter*sin(phiSun+PI)*sizeUnit, 
       rOuter*cos(phiSun)*sizeUnit, rOuter*sin(phiSun)*sizeUnit);
     line(rOuter*cos(phiSun+HALF_PI)*sizeUnit, rOuter*sin(phiSun+HALF_PI)*sizeUnit,
       rOuter*cos(phiSun-HALF_PI)*sizeUnit, rOuter*sin(phiSun-HALF_PI)*sizeUnit);
   }
+  
+  /*
+   * Translate the scene of the sun and the ring of stars to the bottom of the screen and keep it there.
+   */
   if (time>FOCUSONRING_END && time<=TRANSLATERING_END) {
     translate((time-FOCUSONRING_END)/(TRANSLATERING_END-FOCUSONRING_END)*sunRadius*sizeUnit,
     -(time-FOCUSONRING_END)/(TRANSLATERING_END-FOCUSONRING_END)*0.75*sunRadius*sizeUnit);
@@ -142,8 +160,15 @@ void draw() {
   if (time>TRANSLATERING_END) {
     translate(sunRadius*sizeUnit, -0.75*sunRadius*sizeUnit);
   }
+  
+  /*
+   * Section with drawing instructions for the star particles.
+   */
   fill(0);
   noStroke();
+  /*
+   * Show solid boy rotation first and the switch to differential rotation of the star particles.
+   */
   for (int i=0; i<nParticles; i++) {
     if (time <= SOLIDBODY_END) {
       phip[i] = phiZero[i] + time*phiDotSun;
@@ -152,7 +177,10 @@ void draw() {
     }
     xp[i] = r[i] * cos(phip[i]);
     yp[i] = r[i] * sin(phip[i]);
-    if (time > PMCOLORS_START) {
+    /*
+     * Calculate the galactic longitude and proper motions of the stars.
+     */
+    if (time > PMCOLORS_START && time <= ROTATION_END) {
       distp[i] = sqrt(pow(xp[i]-xsun,2) + pow(yp[i]-ysun,2));
       vxp = -r[i]*phiDot[i]*sin(phip[i]);
       vyp = r[i]*phiDot[i]*cos(phip[i]);
@@ -160,14 +188,23 @@ void draw() {
       pml[i] = (-sin(galon[i])*(vxp-vxsun) + cos(galon[i])*(vyp-vysun))/(4.74*distp[i]);
     }
   }
+  
+  pmlscaled = histEqualize(pml);
   maxpml = max(pml);
   minpml = min(pml);
   for (int i=0; i<nParticles; i++) {
+    /*
+     * Colour code the particles according to the proper motion value.
+     */
     if (time <= PMCOLORS_START) {
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
     } else if (time > PMCOLORS_START && time<=RINGTOPLOT_START) {
-      pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      //pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
+      /*
+       * Fade out the stars outisde the ring we want to focus on.
+       */
       if (time>=POSTROTATION_PAUSE_END && time<=FOCUSONRING_END && (distp[i]<ringInner || distp[i]>ringOuter)) {
         fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue(), 
         255*(1.0-(time-POSTROTATION_PAUSE_END)/(POSTROTATION_PAUSE_END-ROTATION_END)));
@@ -177,7 +214,11 @@ void draw() {
       }
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
     } else if (time>RINGTOPLOT_START && time<=RINGTOPLOT_END && distp[i]>=ringInner && distp[i]<=ringOuter) {
-      pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      /*
+       * Transform the ring of stars to the pml vs l plot, but keep a copy of the ring in place.
+       */
+      //pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
         xplotp = xp[i]+(xsun-4*PI-xp[i]+(galon[i]+TWO_PI)*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
@@ -189,7 +230,11 @@ void draw() {
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     } else if (time>RINGTOPLOT_END && distp[i]>=ringInner && distp[i]<=ringOuter) {
-      pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      /*
+       * Keep plotting the stars in the plotbox and on the ring.
+       */
+      //pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
+      pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
         xplotp = xsun-4*PI+(galon[i]+TWO_PI)*4;
@@ -205,6 +250,9 @@ void draw() {
   fill(255,127,14);
   ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
   
+  /*
+   * Indicate Galactic longitude around the ring.
+   */
   if (time>TRANSLATERING_END) {
     pushStyle();
     stroke(0);
@@ -236,6 +284,9 @@ void draw() {
   stroke(0);
   strokeWeight(2);
   noFill();
+  /*
+   * Draw the plot box and annotate the axes
+   */
   if (time>RINGTOPLOT_START) {
     rect((xsun-4*PI)*sizeUnit, (ysun+13.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
     pushStyle();
@@ -259,14 +310,17 @@ void draw() {
   
   popStyle();
   popMatrix();
-  
+
+  /*
+   * Captions for the animation phases.
+   */
   fill(0);
   if (time <= SOLIDBODY_END) {
-    text("Solid Body rotation", 20, 28);
+    text("Motions of the stars if the Milky Way would rotate as a solid body", 20, 28, 5*sizeUnit, 3*sizeUnit);
   } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-    text("Differential rotation", 20, 28);
+    text("In reality stars move in a differential rotation pattern", 20, 28);
   } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-    text("Colour: speed of motion across the sky", 20, 28);
+    text("Now the stars are colour coded according to the speed of their motion across the sky", 20, 28);
   }
   
   //saveFrame("../frames/frame-######.png");
@@ -331,4 +385,52 @@ float[] rotationCurve(float[] radii) {
 float brunettiPfennigerRotCurve(float h, float p, float r) {
   float roverh = r/h;
   return (roverh)*pow(1+(roverh)*(roverh), (p-2/4));
+}
+
+float[] histEqualize(final float[] data) {
+  final List<Integer> sortedIndices = sortIndices(toFloatList(data));
+  Map<Boolean, List<Integer>> nanPartitioned = IntStream.range(0, data.length).boxed().collect(Collectors.partitioningBy(i -> Double.isNaN(data[i])));
+
+  final int nMinOne = nanPartitioned.get(false).size() - 1;
+  float[] transformedData = new float[data.length];
+  for (int i = 0; i < data.length; i++) {
+    transformedData[sortedIndices.get(i)] = Float.isNaN(data[sortedIndices.get(i)]) ? Float.NaN : (float) i / nMinOne;
+  }
+  return transformedData;
+}
+
+<T extends Comparable<T>> List<Integer> sortIndices(final List<T> key) {
+  if (key.size() < 2) {
+    final List<Integer> indices = new ArrayList<>();
+    for (int i = 0; i < key.size(); i++) {
+      indices.add(i);
+    }
+    return indices;
+  }
+
+  /*
+   * Indices of the input list.
+   */
+  final List<Integer> indices = IntStream.range(0, key.size()).boxed().collect(Collectors.toList());
+
+  /*
+   * Sort the indices based on the keys.
+   */
+  Collections.sort(indices, new Comparator<Integer>() {
+    @Override
+    public int compare(final Integer i, final Integer j) {
+      return key.get(i).compareTo(key.get(j));
+    }
+  });
+
+  return indices;
+}
+
+List<Float> toFloatList(final float[] array) {
+  final ArrayList<Float> list = new ArrayList<>();
+  for (final float entry : array) {
+    list.add(entry);
+  }
+  list.trimToSize();
+  return list;
 }
