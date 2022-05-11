@@ -19,12 +19,6 @@
  */
  
 import java.awt.Color;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.stream.IntStream;
 
 int timeStep = -1;
 
@@ -189,7 +183,7 @@ void draw() {
     }
   }
   
-  pmlscaled = histEqualize(pml);
+  pmlscaled = Tools.histEqualize(pml);
   maxpml = max(pml);
   minpml = min(pml);
   for (int i=0; i<nParticles; i++) {
@@ -385,52 +379,4 @@ float[] rotationCurve(float[] radii) {
 float brunettiPfennigerRotCurve(float h, float p, float r) {
   float roverh = r/h;
   return (roverh)*pow(1+(roverh)*(roverh), (p-2/4));
-}
-
-float[] histEqualize(final float[] data) {
-  final List<Integer> sortedIndices = sortIndices(toFloatList(data));
-  Map<Boolean, List<Integer>> nanPartitioned = IntStream.range(0, data.length).boxed().collect(Collectors.partitioningBy(i -> Double.isNaN(data[i])));
-
-  final int nMinOne = nanPartitioned.get(false).size() - 1;
-  float[] transformedData = new float[data.length];
-  for (int i = 0; i < data.length; i++) {
-    transformedData[sortedIndices.get(i)] = Float.isNaN(data[sortedIndices.get(i)]) ? Float.NaN : (float) i / nMinOne;
-  }
-  return transformedData;
-}
-
-<T extends Comparable<T>> List<Integer> sortIndices(final List<T> key) {
-  if (key.size() < 2) {
-    final List<Integer> indices = new ArrayList<>();
-    for (int i = 0; i < key.size(); i++) {
-      indices.add(i);
-    }
-    return indices;
-  }
-
-  /*
-   * Indices of the input list.
-   */
-  final List<Integer> indices = IntStream.range(0, key.size()).boxed().collect(Collectors.toList());
-
-  /*
-   * Sort the indices based on the keys.
-   */
-  Collections.sort(indices, new Comparator<Integer>() {
-    @Override
-    public int compare(final Integer i, final Integer j) {
-      return key.get(i).compareTo(key.get(j));
-    }
-  });
-
-  return indices;
-}
-
-List<Float> toFloatList(final float[] array) {
-  final ArrayList<Float> list = new ArrayList<>();
-  for (final float entry : array) {
-    list.add(entry);
-  }
-  list.trimToSize();
-  return list;
 }
