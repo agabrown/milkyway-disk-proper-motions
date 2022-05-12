@@ -97,56 +97,74 @@ def make_plots(args):
 
     Nothing
     """
-    obatable = load_data(args['inputFile'])
+    if args['type'] in ['O','B','A']:
+        dr3table = load_data('data/OBA_NORR_R03_extended_redd.fits')
+    elif args['type'] in ['F', 'G', 'K', 'M', 'giants']:
+        dr3table = load_data('data/FGKM_gold.fits')
+    else:
+        print("Unknown source type!")
+        exit(0);
 
     plx_snrlim = 10
     vtanhalo = 180.0
-
-    startype = (obatable['spectraltype_esphs'] == 'B')
-    plxfilter = obatable['parallax_over_error']>plx_snrlim
-    nonhalo = obatable['vtan'] < vtanhalo
     zmax = 250
 
-    sample_filter_init = startype & plxfilter & nonhalo & (np.abs(np.sin(np.deg2rad(obatable['b']))*1000/obatable['parallax']) < zmax)
+    plxfilter = dr3table['parallax_over_error']>plx_snrlim
+    nonhalo = dr3table['vtan'] < vtanhalo
+    zfilter = np.abs(np.sin(np.deg2rad(dr3table['b']))*1000/dr3table['parallax']) < zmax
 
-    R_filter = (obatable['R_gc']>6500.0) & (obatable['R_gc']<15000.0)
+    if args['type'] in ['O','B','A']:
+        startype = (dr3table['spectraltype_esphs'] == args['type'])
+    elif args['type'] == 'F':
+        startype = (dr3table['logg_gspphot'] > 4.0) & (dr3table['teff_gspphot'] > 6000)
+    elif args['type'] == 'G':
+        startype = (dr3table['logg_gspphot'] > 4.0) & (dr3table['teff_gspphot'] <= 6000) & (dr3table['teff_gspphot'] > 5000)
+    elif args['type'] == 'K':
+        startype = (dr3table['logg_gspphot'] > 4.0) & (dr3table['teff_gspphot'] <= 5000) & (dr3table['teff_gspphot'] > 4000)
+    elif args['type'] == 'M':
+        startype = (dr3table['logg_gspphot'] > 4.0) & (dr3table['teff_gspphot'] <= 4000)
+    else:
+        startype = (dr3table['logg_gspphot'] <= 3.0)
 
-    sample_filter = sample_filter_init # & R_filter
+    name = args['type']+'_'
+    annotation = args['type']+' stars'
 
-    print(f"Number of stars in selected sample: {obatable['ra'][sample_filter].size}")
+    sample_filter =  startype & plxfilter & nonhalo & zfilter
+
+    print(f"Number of stars in selected sample: {dr3table['ra'][sample_filter].size}")
 
     useagab(axislinewidths=2)
     fig, ax_lmul = plt.subplots(1, 1, tight_layout=True, figsize=(14,5))
 
-    im_lmul = ax_lmul.hexbin(obatable['l'][sample_filter], obatable['pml'][sample_filter], 
+    im_lmul = ax_lmul.hexbin(dr3table['l'][sample_filter], dr3table['pml'][sample_filter], 
                              gridsize=[360,100], mincnt=1, bins='log', extent=[0,360,-20,20])
     ax_lmul.set_xlabel(r'Galactic longitude [$^\circ$]')
     ax_lmul.set_ylabel(r'$\mu_{\ell*}$ [mas yr$^{-1}$]')
     ax_lmul.set_xlim(0,360)
 
-    plt.savefig('bstar-pml-vs-galon.png')
+    plt.savefig(name+'star_pml_vs_galon.png')
     plt.close()
 
     fig, ax_xy = plt.subplots(1, 1, figsize=(8,8), tight_layout=True)
-    ax_xy.hexbin(obatable['x_gc'][sample_filter]/1000, obatable['y_gc'][sample_filter]/1000, mincnt=1, bins='log',
+    ax_xy.hexbin(dr3table['x_gc'][sample_filter]/1000, dr3table['y_gc'][sample_filter]/1000, mincnt=1, bins='log',
             extent=[-15,-4,-8,8], gridsize=200)
     ax_xy.set_xlabel(r'$X$ [kpc]')
     ax_xy.set_ylabel(r'$Y$ [kpc]')
 
-    plt.savefig('bstar_galactic_xy.png')
+    plt.savefig(name+'star_galactic_xy.png')
     plt.close()
 
     fig = plt.figure(constrained_layout=True, figsize=(10,8))
     gs = GridSpec(1, 2, figure=fig, width_ratios=[8,2])
     ax_xy_pml = fig.add_subplot(gs[0,0])
 
-    im_xy_pml = ax_xy_pml.hexbin(obatable['x_gc'][sample_filter]/1000, obatable['y_gc'][sample_filter]/1000, mincnt=0,
-            C=obatable['pml'][sample_filter], extent=[-15,-4,-8,8], gridsize=200, reduce_C_function=np.median,
+    im_xy_pml = ax_xy_pml.hexbin(dr3table['x_gc'][sample_filter]/1000, dr3table['y_gc'][sample_filter]/1000, mincnt=0,
+            C=dr3table['pml'][sample_filter], extent=[-15,-4,-8,8], gridsize=200, reduce_C_function=np.median,
             cmap='plasma')
     ax_xy_pml.clear()
     imnorm = ImageNormalize(im_xy_pml.get_array(), stretch=HistEqStretch(im_xy_pml.get_array()))
-    im_xy_pml =ax_xy_pml.hexbin(obatable['x_gc'][sample_filter]/1000, obatable['y_gc'][sample_filter]/1000, mincnt=0,
-            C=obatable['pml'][sample_filter], extent=[-15,-4,-8,8], gridsize=200, reduce_C_function=np.median,
+    im_xy_pml =ax_xy_pml.hexbin(dr3table['x_gc'][sample_filter]/1000, dr3table['y_gc'][sample_filter]/1000, mincnt=0,
+            C=dr3table['pml'][sample_filter], extent=[-15,-4,-8,8], gridsize=200, reduce_C_function=np.median,
             cmap='plasma', norm=imnorm)
     ax_xy_pml.set_xlabel(r'$X$ [kpc]')
     ax_xy_pml.set_ylabel(r'$Y$ [kpc]')
@@ -157,7 +175,7 @@ def make_plots(args):
     cbar = fig.colorbar(im_xy_pml, cax=cax_xy_pml, ticks=[-5,-2,0,1])
     cbar.set_label(r'median $\mu_{\ell*}$ [mas yr$^{-1}$]')
 
-    plt.savefig('bstar_galactic_xy_pml.png')
+    plt.savefig(name+'star_galactic_xy_pml.png')
     plt.close()
 
 
@@ -166,7 +184,7 @@ def parseCommandLineArguments():
     Set up command line parsing.
     """
     parser = argparse.ArgumentParser(description="""Observational plots to accompany animation""")
-    parser.add_argument('inputFile', type=str, help="""FITS file with data for the OBA star golden sample""")
+    parser.add_argument("--type", type=str, default='B', help="""Source type to plot: O, B, A, F, G, K, M, giants""")
     parser.add_argument("-p", action="store_true", dest="pdfOutput", help="Make PDF plots")
     parser.add_argument("-b", action="store_true", dest="pngOutput", help="Make PNG plots")
     cmdargs = vars(parser.parse_args())

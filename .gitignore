@@ -2,6 +2,9 @@
 *.png
 frames/*.png
 *.swp
+data/*.fits
+data/*.vot
+data/*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
