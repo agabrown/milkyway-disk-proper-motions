@@ -142,7 +142,7 @@ def make_plots(args):
     ax_lmul.set_ylabel(r'$\mu_{\ell*}$ [mas yr$^{-1}$]')
     ax_lmul.set_xlim(0,360)
 
-    plt.savefig(name+'star_pml_vs_galon.png')
+    plt.savefig('img/'+name+'star_pml_vs_galon.png')
     plt.close()
 
     fig, ax_xy = plt.subplots(1, 1, figsize=(8,8), tight_layout=True)
@@ -151,7 +151,7 @@ def make_plots(args):
     ax_xy.set_xlabel(r'$X$ [kpc]')
     ax_xy.set_ylabel(r'$Y$ [kpc]')
 
-    plt.savefig(name+'star_galactic_xy.png')
+    plt.savefig('img/'+name+'star_galactic_xy.png')
     plt.close()
 
     fig = plt.figure(constrained_layout=True, figsize=(10,8))
@@ -175,7 +175,7 @@ def make_plots(args):
     cbar = fig.colorbar(im_xy_pml, cax=cax_xy_pml, ticks=[-5,-2,0,1])
     cbar.set_label(r'median $\mu_{\ell*}$ [mas yr$^{-1}$]')
 
-    plt.savefig(name+'star_galactic_xy_pml.png')
+    plt.savefig('img/'+name+'star_galactic_xy_pml.png')
     plt.close()
 
 

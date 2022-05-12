@@ -1,6 +1,8 @@
 *.mp4
 *.png
 frames/*.png
+img/*.png
+img/*.pdf
 *.swp
 data/*.fits
 data/*.vot

@@ -59,9 +59,9 @@ def make_plot(args):
 
     basename = 'RotationCurve-BP2010'
     if args['pdfOutput']:
-        plt.savefig(basename+'.pdf')
+        plt.savefig('img/'+basename+'.pdf')
     elif args['pngOutput']:
-        plt.savefig(basename+'.png')
+        plt.savefig('img/'+basename+'.png')
     else:
         plt.show()
 

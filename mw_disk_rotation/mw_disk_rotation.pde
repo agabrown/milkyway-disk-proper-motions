@@ -28,25 +28,26 @@ float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 5.0;
+float periodSunInSeconds = 15.0;
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
 /*
  * The animation sequence durations in units of the sun's revolution period.
  */
-float SOLIDBODY_END = 1;
-float PMCOLORS_START = 2;
-float ROTATION_END = 3;
-float POSTROTATION_PAUSE_END = 3.25;
-float FOCUSONRING_END = 3.5;
-float TRANSLATERING_END = 3.75;
-float RINGTOPLOT_START = 4.25;
-float RINGTOPLOT_END = 4.75;
+float START_UP = 1;
+float SOLIDBODY_END = START_UP + 1;
+float PMCOLORS_START = START_UP + 2;
+float ROTATION_END = START_UP + 3;
+float POSTROTATION_PAUSE_END = START_UP + 3.25;
+float FOCUSONRING_END = START_UP + 3.5;
+float TRANSLATERING_END = START_UP + 3.75;
+float RINGTOPLOT_START = START_UP + 4.25;
+float RINGTOPLOT_END = START_UP + 4.75;
 /*
  * animation duration in units of Sun's revolution period
  */
-float DURATION_REVS = 5.5;
+float DURATION_REVS = START_UP + RINGTOPLOT_END + 0.75;
 
 /*
  * Inner and our radii of ring of stars around sun for pml vs l plot, in kpc
@@ -57,6 +58,10 @@ float ringOuter = 5;
 int sizeUnit;
 int diskRadius = 16;    // Milky Way disk radius in kpc (distance out to which particles are drawn)
 float particleRadius;
+float textW;
+float textH;
+float textX = 15;
+float textY = 15;
 
 int nParticles = 7000;
 float[] r = new float[nParticles];
@@ -85,6 +90,8 @@ Color pmlColor;
 void setup() {
   size(960, 960, P2D);
   sizeUnit = width / (2*diskRadius);
+  textW = 10*sizeUnit;
+  textH = 7*sizeUnit;
   particleRadius = sizeUnit * 0.1;
   frameRate(fRate);
   ellipseMode(RADIUS);
@@ -119,9 +126,13 @@ void draw() {
   /*
    * Only animate milky way rotation up to ROTATION_END sun revolutions.
    */
-  if (time <= ROTATION_END) {
-    phiSun = phiZeroSun + time*phiDotSun;
+  
+  if (time <= START_UP) {
+    phiSun = phiZeroSun;
+  } else if (time > START_UP && time <= ROTATION_END) {
+    phiSun = phiZeroSun + (time-START_UP)*phiDotSun;
   }
+    
   xsun = sunRadius * cos(phiSun);
   ysun = sunRadius * sin(phiSun);
   vxsun = -sunRadius*phiDotSun*sin(phiSun);
@@ -165,10 +176,12 @@ void draw() {
    * Show solid boy rotation first and the switch to differential rotation of the star particles.
    */
   for (int i=0; i<nParticles; i++) {
-    if (time <= SOLIDBODY_END) {
-      phip[i] = phiZero[i] + time*phiDotSun;
-    } else if (time <=3) {
-      phip[i] = phiZero[i] + (time-1)*phiDot[i];
+    if (time <= START_UP) {
+      phip[i] = phiZero[i];
+    } else if (time > START_UP && time <= SOLIDBODY_END) {
+      phip[i] = phiZero[i] + (time-START_UP)*phiDotSun;
+    } else if (time <= ROTATION_END) {
+      phip[i] = phiZero[i] + (time-SOLIDBODY_END)*phiDot[i];
     }
     xp[i] = r[i] * cos(phip[i]);
     yp[i] = r[i] * sin(phip[i]);
@@ -310,19 +323,25 @@ void draw() {
    * Captions for the animation phases.
    */
   fill(0);
-  if (time <= SOLIDBODY_END) {
-    text("Motions of the stars if the Milky Way would rotate as a solid body.", 15, 15, 8*sizeUnit, 5*sizeUnit);
+  if (time <= 0.5*START_UP) {
+    text("A schematic model of the Milky Way disk seen from above. The Sun is the big orange dot." + 
+      " The other dots represent stars orbiting around the center of the Milky Way disk.", textX, textY, textW, textH);
+  } else if (time <= START_UP) {
+    text("The animation will show the motions of the stars as they orbit in the disk and" +
+      " then show how these motions appear when see from the sun.", textX, textY, textW, textH);
+  } else if (time <= SOLIDBODY_END) {
+    text("Motions of the stars if the Milky Way would rotate as a solid body.", textX, textY, textW, textH);
   } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
     text("In reality stars revolve around the Milky Way centre in a so-called differential rotation pattern." +
-      " Faster close to the centre, slower outside", 15, 15, 8*sizeUnit, 7*sizeUnit);
+      " Faster close to the centre, slower outside", textX, textY,  textW, textH);
   } else if (time > PMCOLORS_START && time <= ROTATION_END) {
     text("Now the stars are colour coded according to the speed of their motion across the sky," + 
-      " as seen from the Sun.", 15, 15, 8*sizeUnit, 7*sizeUnit);
+      " as seen from the Sun.", textX, textY,  textW, textH);
   } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
-    text("We now focus on a ring of stars around the sun.", 15, 15, 8*sizeUnit, 5*sizeUnit);
+    text("We now focus on a ring of stars around the sun.", textX, textY,  textW, textH);
   } else if (time > FOCUSONRING_END && time < RINGTOPLOT_START) {
     text("We move the ring to the bottom of the screen and indicate the sky directions" +
-      " (longitude) around the ring.", 15, 15, 8*sizeUnit, 5*sizeUnit);
+      " (longitude) around the ring.", textX, textY,  textW, textH);
   }
   
   //saveFrame("../frames/frame-######.png");
