@@ -101,6 +101,7 @@ void setup() {
   phiDot = rotationCurve(r);
   
   textSize(20);
+  textLeading(24);
 }
 
 void draw() {
@@ -310,11 +311,18 @@ void draw() {
    */
   fill(0);
   if (time <= SOLIDBODY_END) {
-    text("Motions of the stars if the Milky Way would rotate as a solid body", 20, 28, 8*sizeUnit, 5*sizeUnit);
+    text("Motions of the stars if the Milky Way would rotate as a solid body.", 15, 15, 8*sizeUnit, 5*sizeUnit);
   } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-    text("In reality stars move in a differential rotation pattern", 20, 28, 8*sizeUnit, 5*sizeUnit);
+    text("In reality stars revolve around the Milky Way centre in a so-called differential rotation pattern." +
+      " Faster close to the centre, slower outside", 15, 15, 8*sizeUnit, 7*sizeUnit);
   } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-    text("Now the stars are colour coded according to the speed of their motion across the sky", 20, 28, 8*sizeUnit, 5*sizeUnit);
+    text("Now the stars are colour coded according to the speed of their motion across the sky," + 
+      " as seen from the Sun.", 15, 15, 8*sizeUnit, 7*sizeUnit);
+  } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
+    text("We now focus on a ring of stars around the sun.", 15, 15, 8*sizeUnit, 5*sizeUnit);
+  } else if (time > FOCUSONRING_END && time < RINGTOPLOT_START) {
+    text("We move the ring to the bottom of the screen and indicate the sky directions" +
+      " (longitude) around the ring.", 15, 15, 8*sizeUnit, 5*sizeUnit);
   }
   
   //saveFrame("../frames/frame-######.png");
