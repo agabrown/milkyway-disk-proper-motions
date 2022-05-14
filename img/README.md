@@ -1,3 +1,3 @@
-## Images generated with the python code
+## Images used in the animation.
 
-The images are not stored on Github.
+The images that can be generated with the Python code are not stored here, except for the ones used in the animation.

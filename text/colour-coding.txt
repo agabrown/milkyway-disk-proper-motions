@@ -1,0 +1,2 @@
+Now the stars are colour coded according to the speed of their motion across
+the sky, as seen from the Sun.

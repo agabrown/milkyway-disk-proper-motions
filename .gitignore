@@ -8,6 +8,9 @@ data/*.fits
 data/*.vot
 data/*.csv
 
+# Include following
+!img/B_star_pml_vs_galon.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

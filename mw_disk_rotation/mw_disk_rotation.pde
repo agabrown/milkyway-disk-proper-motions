@@ -86,6 +86,10 @@ PMatrix2D rightHanded2DtoP2D = new PMatrix2D(1,  0, 0,
 
 ColourLookUpTable lut = ColourLuts.PLASMA.getLut();
 Color pmlColor;
+String modelIntro, animIntro, solidBodyText, differentialText;
+String colourCodingText, focusRingText, moveRingText, speedVsLonText;
+
+PImage pmlVsLImg, milkyWayImg;
 
 void setup() {
   size(960, 960, P2D);
@@ -109,6 +113,19 @@ void setup() {
   
   textSize(20);
   textLeading(24);
+  
+  modelIntro = loadText("../text/model-intro.txt");
+  animIntro = loadText("../text/anim-intro.txt");
+  solidBodyText = loadText("../text/solid-body.txt");
+  differentialText = loadText("../text/differential.txt");
+  colourCodingText = loadText("../text/colour-coding.txt");
+  focusRingText = loadText("../text/focus-on-ring.txt");
+  moveRingText = loadText("../text/move-ring.txt");
+  speedVsLonText = loadText("../text/speed-vs-longitude.txt");
+  
+  pmlVsLImg = loadImage("../img/B_star_pml_vs_galon.png");
+  milkyWayImg = loadImage("../img/mw_payne_wardenaar_shaved-try.png");
+  imageMode(CENTER);
 }
 
 void draw() {
@@ -137,6 +154,13 @@ void draw() {
   ysun = sunRadius * sin(phiSun);
   vxsun = -sunRadius*phiDotSun*sin(phiSun);
   vysun = sunRadius*phiDotSun*cos(phiSun);
+ 
+  /*
+  pushMatrix();
+  translate(width/2+sizeUnit, height/2);
+  image(milkyWayImg, 0, 0);
+  popMatrix();
+  */
 
   pushMatrix();
   pushStyle();
@@ -324,27 +348,25 @@ void draw() {
    */
   fill(0);
   if (time <= 0.5*START_UP) {
-    text("A schematic model of the Milky Way disk seen from above. The Sun is the big orange dot." + 
-      " The other dots represent stars orbiting around the center of the Milky Way disk.", textX, textY, textW, textH);
+    text(modelIntro, textX, textY, textW, textH);
   } else if (time <= START_UP) {
-    text("The animation will show the motions of the stars as they orbit in the disk and" +
-      " then show how these motions appear when see from the sun.", textX, textY, textW, textH);
+    text(animIntro, textX, textY, textW, textH);
   } else if (time <= SOLIDBODY_END) {
-    text("Motions of the stars if the Milky Way would rotate as a solid body.", textX, textY, textW, textH);
+    text(solidBodyText, textX, textY, textW, textH);
   } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-    text("In reality stars revolve around the Milky Way centre in a so-called differential rotation pattern." +
-      " Faster close to the centre, slower outside", textX, textY,  textW, textH);
+    text(differentialText, textX, textY,  textW, textH);
   } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-    text("Now the stars are colour coded according to the speed of their motion across the sky," + 
-      " as seen from the Sun.", textX, textY,  textW, textH);
+    text(colourCodingText, textX, textY,  textW, textH);
   } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
-    text("We now focus on a ring of stars around the sun.", textX, textY,  textW, textH);
+    text(focusRingText, textX, textY,  textW, textH);
   } else if (time > FOCUSONRING_END && time < RINGTOPLOT_START) {
-    text("We move the ring to the bottom of the screen and indicate the sky directions" +
-      " (longitude) around the ring.", textX, textY,  textW, textH);
+    text(moveRingText, textX, textY,  textW, textH);
   } else if (time > RINGTOPLOT_START) {
-    text("The speed of the star motions across the sky is now plotted versus direction on the sky." +
-      " This reveals the wavy pattern also seen in the Gaia data.", textX, textY, 25*sizeUnit, 3*sizeUnit);
+    text(speedVsLonText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+  }
+  
+  if (time > RINGTOPLOT_END) {
+    image(pmlVsLImg, width/2, 25*sizeUnit, 0.8*pmlVsLImg.width, 0.8*pmlVsLImg.height);
   }
   
   //saveFrame("../frames/frame-######.png");
@@ -409,4 +431,21 @@ float[] rotationCurve(float[] radii) {
 float brunettiPfennigerRotCurve(float h, float p, float r) {
   float roverh = r/h;
   return (roverh)*pow(1+(roverh)*(roverh), (p-2/4));
+}
+
+/**
+ * Load a text from a file and combine multiple lines into a single string.
+ *
+ * @param file
+ *  Name of input file.
+ *
+ * @return
+ *  The text combined into a string.
+ */
+String loadText(String file) {
+  String result = "";
+  for (String s : loadStrings(file)) {
+    result = result + s + " ";
+  }
+  return result.trim();
 }
