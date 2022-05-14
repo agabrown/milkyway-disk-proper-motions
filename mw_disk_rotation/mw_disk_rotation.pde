@@ -28,7 +28,7 @@ float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 15.0;
+float periodSunInSeconds = 5.0;
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
@@ -342,6 +342,9 @@ void draw() {
   } else if (time > FOCUSONRING_END && time < RINGTOPLOT_START) {
     text("We move the ring to the bottom of the screen and indicate the sky directions" +
       " (longitude) around the ring.", textX, textY,  textW, textH);
+  } else if (time > RINGTOPLOT_START) {
+    text("The speed of the star motions across the sky is now plotted versus direction on the sky." +
+      " This reveals the wavy pattern also seen in the Gaia data.", textX, textY, 25*sizeUnit, 3*sizeUnit);
   }
   
   //saveFrame("../frames/frame-######.png");
