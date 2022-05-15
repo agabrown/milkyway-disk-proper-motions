@@ -44,10 +44,11 @@ float FOCUSONRING_END = START_UP + 3.5;
 float TRANSLATERING_END = START_UP + 3.75;
 float RINGTOPLOT_START = START_UP + 4.25;
 float RINGTOPLOT_END = START_UP + 4.75;
+float SHOWDATA_START = START_UP + 5.25;
 /*
  * animation duration in units of Sun's revolution period
  */
-float DURATION_REVS = START_UP + RINGTOPLOT_END + 0.75;
+float DURATION_REVS = START_UP + SHOWDATA_START + 0.5;
 
 /*
  * Inner and our radii of ring of stars around sun for pml vs l plot, in kpc
@@ -88,6 +89,7 @@ ColourLookUpTable lut = ColourLuts.PLASMA.getLut();
 Color pmlColor;
 String modelIntro, animIntro, solidBodyText, differentialText;
 String colourCodingText, focusRingText, moveRingText, speedVsLonText;
+String showDataText;
 
 PImage pmlVsLImg, milkyWayImg;
 
@@ -122,6 +124,7 @@ void setup() {
   focusRingText = loadText("../text/focus-on-ring.txt");
   moveRingText = loadText("../text/move-ring.txt");
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
+  showDataText = loadText("../text/compare-to-data.txt");
   
   pmlVsLImg = loadImage("../img/B_star_pml_vs_galon.png");
   milkyWayImg = loadImage("../img/mw_payne_wardenaar_shaved-try.png");
@@ -249,7 +252,6 @@ void draw() {
       /*
        * Transform the ring of stars to the pml vs l plot, but keep a copy of the ring in place.
        */
-      //pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
@@ -265,7 +267,6 @@ void draw() {
       /*
        * Keep plotting the stars in the plotbox and on the ring.
        */
-      //pmlColor = lut.getColour(1-(pml[i]-minpml)/(maxpml-minpml));
       pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
@@ -274,18 +275,22 @@ void draw() {
         xplotp = xsun-4*PI+galon[i]*4;
       }
       yplotp = ysun+14+4*(pml[i]-minpml)/(maxpml-minpml);
-      ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
+      if (time<=SHOWDATA_START) {
+        ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
+      }
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
     }
   }
   
   fill(255,127,14);
-  ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
+  if (time<=SHOWDATA_START) {
+    ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
+  }
   
   /*
    * Indicate Galactic longitude around the ring.
    */
-  if (time>TRANSLATERING_END) {
+  if (time>TRANSLATERING_END && time<SHOWDATA_START) {
     pushStyle();
     stroke(0);
     fill(0);
@@ -359,14 +364,16 @@ void draw() {
     text(colourCodingText, textX, textY,  textW, textH);
   } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
     text(focusRingText, textX, textY,  textW, textH);
-  } else if (time > FOCUSONRING_END && time < RINGTOPLOT_START) {
-    text(moveRingText, textX, textY,  textW, textH);
-  } else if (time > RINGTOPLOT_START) {
+  } else if (time > FOCUSONRING_END && time <=RINGTOPLOT_START) {
+    text(moveRingText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+  } else if (time > RINGTOPLOT_START && time<=SHOWDATA_START) {
     text(speedVsLonText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+  } else if (time > SHOWDATA_START) {
+    text(showDataText, textX, textY, 25*sizeUnit, 3*sizeUnit);
   }
   
-  if (time > RINGTOPLOT_END) {
-    image(pmlVsLImg, width/2, 25*sizeUnit, 0.8*pmlVsLImg.width, 0.8*pmlVsLImg.height);
+  if (time > SHOWDATA_START) {
+    image(pmlVsLImg, width/2, 20*sizeUnit, 0.8*pmlVsLImg.width, 0.8*pmlVsLImg.height);
   }
   
   //saveFrame("../frames/frame-######.png");
