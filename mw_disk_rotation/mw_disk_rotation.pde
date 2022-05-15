@@ -28,7 +28,7 @@ float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 5.0;
+float periodSunInSeconds = 15.0;
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
@@ -132,7 +132,7 @@ void setup() {
 }
 
 void draw() {
-  background(192);
+  background(0);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
   
@@ -169,7 +169,7 @@ void draw() {
   pushStyle();
   applyTransformation(width/2+sizeUnit, height/2);
   
-  stroke(0);
+  stroke(192);
   strokeWeight(2);
 
   /*
@@ -197,7 +197,7 @@ void draw() {
   /*
    * Section with drawing instructions for the star particles.
    */
-  fill(0);
+  fill(192);
   noStroke();
   /*
    * Show solid boy rotation first and the switch to differential rotation of the star particles.
@@ -223,6 +223,38 @@ void draw() {
       pml[i] = (-sin(galon[i])*(vxp-vxsun) + cos(galon[i])*(vyp-vysun))/(4.74*distp[i]);
     }
   }
+  
+  pushStyle();
+  stroke(0);
+  strokeWeight(2);
+  noFill();
+  /*
+   * Draw the plot box and annotate the axes
+   */
+  if (time>RINGTOPLOT_START) {
+    pushStyle();
+    fill(255);
+    rect((xsun-4*PI-2)*sizeUnit, (ysun+9.0)*sizeUnit, (8*PI+3)*sizeUnit, 10.0*sizeUnit);
+    popStyle();
+    rect((xsun-4*PI)*sizeUnit, (ysun+12.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
+    pushStyle();
+    fill(0);
+    pushMatrix();
+    applyMatrix(rightHanded2DtoP2D);
+    for (int k=0; k<4; k++) {
+      textAlign(CENTER, BOTTOM);
+      text(String.valueOf(k*90), (xsun-4*PI+k/4.0*8*PI)*sizeUnit, -((ysun+12.0)*sizeUnit-30));
+    }
+    textAlign(CENTER, BOTTOM);
+    text("Sky position", xsun*sizeUnit, -((ysun+12.0)*sizeUnit-60));
+    translate((xsun-4*PI)*sizeUnit-30, -((ysun+13.0)*sizeUnit));
+    rotate(-HALF_PI);
+    textAlign(LEFT, CENTER);
+    text("speed across sky", 0, 0);
+    popMatrix();
+    popStyle();
+  }
+  popStyle();
   
   pmlscaled = Tools.histEqualize(pml);
   maxpml = max(pml);
@@ -259,7 +291,7 @@ void draw() {
       } else {
         xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       }
-      yplotp = yp[i]+(ysun+14-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml)) * 
+      yplotp = yp[i]+(ysun+13-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml)) * 
         (time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
       ellipse(xplotp*sizeUnit, yplotp*sizeUnit, particleRadius, particleRadius);
@@ -274,7 +306,7 @@ void draw() {
       } else {
         xplotp = xsun-4*PI+galon[i]*4;
       }
-      yplotp = ysun+14+4*(pml[i]-minpml)/(maxpml-minpml);
+      yplotp = ysun+13+4*(pml[i]-minpml)/(maxpml-minpml);
       if (time<=SHOWDATA_START) {
         ellipse(xp[i]*sizeUnit, yp[i]*sizeUnit, particleRadius, particleRadius);
       }
@@ -292,8 +324,8 @@ void draw() {
    */
   if (time>TRANSLATERING_END && time<SHOWDATA_START) {
     pushStyle();
-    stroke(0);
-    fill(0);
+    stroke(255);
+    fill(255);
     strokeWeight(2);
     for (int k=0; k<12; k++) {
       galontext = k*30;
@@ -317,41 +349,13 @@ void draw() {
     popStyle();
   }
   
-  pushStyle();
-  stroke(0);
-  strokeWeight(2);
-  noFill();
-  /*
-   * Draw the plot box and annotate the axes
-   */
-  if (time>RINGTOPLOT_START) {
-    rect((xsun-4*PI)*sizeUnit, (ysun+13.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
-    pushStyle();
-    fill(0);
-    pushMatrix();
-    applyMatrix(rightHanded2DtoP2D);
-    for (int k=0; k<4; k++) {
-      textAlign(CENTER, BOTTOM);
-      text(String.valueOf(k*90), (xsun-4*PI+k/4.0*8*PI)*sizeUnit, -((ysun+13.0)*sizeUnit-30));
-    }
-    textAlign(CENTER, BOTTOM);
-    text("Sky position", xsun*sizeUnit, -((ysun+13.0)*sizeUnit-60));
-    translate((xsun-4*PI)*sizeUnit-30, -((ysun+14.0)*sizeUnit));
-    rotate(-HALF_PI);
-    textAlign(LEFT, CENTER);
-    text("speed across sky", 0, 0);
-    popMatrix();
-    popStyle();
-  }
-  popStyle();
-  
   popStyle();
   popMatrix();
 
   /*
    * Captions for the animation phases.
    */
-  fill(0);
+  fill(255);
   if (time <= 0.5*START_UP) {
     text(modelIntro, textX, textY, textW, textH);
   } else if (time <= START_UP) {

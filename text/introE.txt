@@ -1,0 +1,3 @@
+Notice how the speed at which the stars move goes up and down in wavy pattern.
+Why does this happen? The following animated infographic explains how we can
+understand the plot below.
