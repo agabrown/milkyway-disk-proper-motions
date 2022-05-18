@@ -28,7 +28,7 @@ float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 15.0;
+float periodSunInSeconds = 5.0;
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
@@ -377,7 +377,7 @@ void draw() {
   }
   
   if (time > SHOWDATA_START) {
-    image(pmlVsLImg, width/2, 20*sizeUnit, 0.8*pmlVsLImg.width, 0.8*pmlVsLImg.height);
+    image(pmlVsLImg, width/2+0.5*sizeUnit, 20*sizeUnit, (8*PI+3)*sizeUnit, (8*PI+3)*sizeUnit/pmlVsLImg.width*pmlVsLImg.height);
   }
   
   //saveFrame("../frames/frame-######.png");
