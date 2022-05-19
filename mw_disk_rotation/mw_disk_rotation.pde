@@ -28,14 +28,14 @@ float rInner = 0.1;      // Disk inner radius in kpc
 float rOuter = 13.5;     // Disk outer radius in kpc
 
 float time;
-float periodSunInSeconds = 5.0;
+float periodSunInSeconds = 10.0;
 int fRate = 30;
 float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 
 /*
  * The animation sequence durations in units of the sun's revolution period.
  */
-float START_UP = 1;
+float START_UP = 1.5;
 float SOLIDBODY_END = START_UP + 1;
 float PMCOLORS_START = START_UP + 2;
 float ROTATION_END = START_UP + 3;
@@ -90,8 +90,9 @@ Color pmlColor;
 String modelIntro, animIntro, solidBodyText, differentialText;
 String colourCodingText, focusRingText, moveRingText, speedVsLonText;
 String showDataText;
+String DEG = "°";
 
-PImage pmlVsLImg, milkyWayImg;
+PImage pmlVsLImg;
 
 void setup() {
   size(960, 960, P2D);
@@ -127,7 +128,6 @@ void setup() {
   showDataText = loadText("../text/compare-to-data.txt");
   
   pmlVsLImg = loadImage("../img/B_star_pml_vs_galon.png");
-  milkyWayImg = loadImage("../img/mw_payne_wardenaar_shaved-try.png");
   imageMode(CENTER);
 }
 
@@ -241,16 +241,16 @@ void draw() {
     fill(0);
     pushMatrix();
     applyMatrix(rightHanded2DtoP2D);
-    for (int k=0; k<4; k++) {
+    for (int k=0; k<8; k++) {
       textAlign(CENTER, BOTTOM);
-      text(String.valueOf(k*90), (xsun-4*PI+k/4.0*8*PI)*sizeUnit, -((ysun+12.0)*sizeUnit-30));
+      text(String.valueOf(k*50)+DEG, (xsun-4*PI+(k*50/360.0)*8*PI)*sizeUnit, -((ysun+12.0)*sizeUnit-30));
     }
     textAlign(CENTER, BOTTOM);
-    text("Sky position", xsun*sizeUnit, -((ysun+12.0)*sizeUnit-60));
-    translate((xsun-4*PI)*sizeUnit-30, -((ysun+13.0)*sizeUnit));
+    text("Galactic longitude", xsun*sizeUnit, -((ysun+12.0)*sizeUnit-60));
+    translate((xsun-4*PI)*sizeUnit-30, -((ysun+12.5)*sizeUnit));
     rotate(-HALF_PI);
     textAlign(LEFT, CENTER);
-    text("speed across sky", 0, 0);
+    text("velocity across sky", 0, 0);
     popMatrix();
     popStyle();
   }
@@ -343,7 +343,7 @@ void draw() {
       } else if (galontext==270) {
         textAlign(CENTER, TOP);
       }
-      text("l="+String.valueOf(int(galontext)), (xsun+7.2*cos(angle))*sizeUnit, -(ysun+7.2*sin(angle))*sizeUnit);
+      text("l="+String.valueOf(int(galontext))+DEG, (xsun+7.2*cos(angle))*sizeUnit, -(ysun+7.2*sin(angle))*sizeUnit);
       popMatrix();
     }
     popStyle();
@@ -380,7 +380,7 @@ void draw() {
     image(pmlVsLImg, width/2+0.5*sizeUnit, 20*sizeUnit, (8*PI+3)*sizeUnit, (8*PI+3)*sizeUnit/pmlVsLImg.width*pmlVsLImg.height);
   }
   
-  //saveFrame("../frames/frame-######.png");
+  saveFrame("../frames/frame-######.png");
 }
 
 /**
@@ -399,15 +399,15 @@ void applyTransformation(float x, float y) {
 }
 
 /**
- * Provide the circular velocity of the star at Galactocentric radius R, converted to and angular 
- * speed in aziumth d_phi/d_t. The angular speeds are normalized to the angular speed at the sun's 
+ * Provide the circular velocity of the star at Galactocentric radius R, converted to an angular 
+ * velocity in aziumth d_phi/d_t. The angular velocities are normalized to the angular speed at the sun's 
  * radius (Vcirc_sun/R_sun).
  *
  * @param radii
  *  float[] with the Galactocentric radii of the stars in kpc.
  *
  * @return
- *   float[] with the angular speeds (d_phi/d_t) of the stars.
+ *   float[] with the angular velocities (d_phi/d_t) of the stars.
  */
 float[] rotationCurve(float[] radii) {
   

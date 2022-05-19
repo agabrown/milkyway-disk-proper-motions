@@ -53,6 +53,8 @@ def make_frames():
     ax.imshow(milkyway, origin='upper')
     ax.axis('off')
     ax.scatter(250, 480, color='C1', s=120)
+    ax.text(220, 480, "Sun", ha='right', va='center', color='w', fontsize=16)
+    ax.text(480, 900, "Milky way face-on view - artist's impression", ha='center', color='w', fontsize=16)
     startAngleDeg = 10
     endAngleDeg=70
     startAngle = np.deg2rad(startAngleDeg)

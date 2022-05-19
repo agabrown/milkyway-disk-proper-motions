@@ -1,2 +1,3 @@
-The speed of the star motions across the sky is now plotted versus direction on
-the sky. This reveals the wavy pattern also seen in the Gaia data.
+The velocity of the star motions across the sky is now plotted versus
+direction on the sky. This reveals the wavy pattern also seen in the Gaia
+data.

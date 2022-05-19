@@ -138,8 +138,14 @@ def make_plots(args):
 
     im_lmul = ax_lmul.hexbin(dr3table['l'][sample_filter], dr3table['pml'][sample_filter], 
                              gridsize=[360,100], mincnt=1, bins='log', extent=[0,360,-20,20])
-    ax_lmul.set_xlabel(r'Galactic longitude [$^\circ$]')
-    ax_lmul.set_ylabel(r'$\mu_{\ell*}$ [mas yr$^{-1}$]')
+    ax_lmul.set_xlabel(r'Galactic longitude')
+    ax_lmul.xaxis.set_major_formatter('${x:.0f}^\circ$')
+    if args['simpleLang']:
+        ax_lmul.set_ylabel(r'$\mu$ [mas yr$^{-1}$]')
+        #ax_lmul.set_ylabel(r'Speed on the sky $\longrightarrow$')
+        #ax_lmul.tick_params(left=False, labelleft=False)
+    else:
+        ax_lmul.set_ylabel(r'$\mu_{\ell*}$ [mas yr$^{-1}$]')
     ax_lmul.set_xlim(0,360)
 
     plt.savefig('img/'+name+'star_pml_vs_galon.png')
@@ -185,6 +191,7 @@ def parseCommandLineArguments():
     """
     parser = argparse.ArgumentParser(description="""Observational plots to accompany animation""")
     parser.add_argument("--type", type=str, default='B', help="""Source type to plot: O, B, A, F, G, K, M, giants""")
+    parser.add_argument("-l", action="store_true", dest="simpleLang", help="Simplify language on the axes")
     parser.add_argument("-p", action="store_true", dest="pdfOutput", help="Make PDF plots")
     parser.add_argument("-b", action="store_true", dest="pngOutput", help="Make PNG plots")
     cmdargs = vars(parser.parse_args())

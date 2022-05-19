@@ -1,16 +1,9 @@
-This image shows an artist's impression of the
-Milky Way disk seen from above, with the
-approximate position of the Sun indicated by the
-orange dot.
-
-The wavy pattern in the speeds of the stars is
-caused by the fact that the Sun and all the other
-stars in the Milky Disk orbit around the centre of
-our galaxy. This causes the disk as a whole to
-rotate in a clockwise direction as indicated by
-the arrow.
+The Sun and all the other stars in the Milky Disk
+orbit around the centre of our galaxy. This causes
+the disk as a whole to rotate in a clockwise
+direction as indicated by the arrow.
 
 The following animation shows how the motions of
 the stars in the disk lead to the wavy pattern we
-see in the speeds at which the stars move across
-the sky.
+see in the velocities at which the stars move
+across the sky, as seen from the Sun.

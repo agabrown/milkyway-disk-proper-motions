@@ -1,2 +1,2 @@
 The animation will show the motions of the stars as they orbit in the disk and
-then show how these motions appear when see from the sun.
+then show how these motions appear when seen from the sun.

@@ -1,3 +1,6 @@
-Notice how the speed at which the stars move goes up and down in wavy pattern.
-Why does this happen? The following animated infographic explains how we can
+Positive velocities indicate stars moving toward increasing values of
+longitude, and vice versa for negative velocities.
+
+Notice how the velocity at which the stars move goes up and down in wavy
+pattern. Why does this happen? The following animation explains how we can
 understand the plot below.

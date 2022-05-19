@@ -5,9 +5,26 @@
 # Steps taken in the ffmpeg lines below
 #
 # 1 ffmpeg command
-# 2 generate black backgrond image (stream [0:v])
-# 2 set frame rate and frames folder
-# 3 select video codec and set resolution of output animation
+# 2 Generate black backgrond image (stream [0:v])
+# 3 First introductory frame, loop for the number of seconds after "-t" (stream [1:v])
+# 4 Second introductory frame, loop for the number of seconds after "-t" (stream [2:v])
+# 5 Third introductory frame, loop for the number of seconds after "-t" (stream [3:v])
+# 6 Fourth introductory frame, loop for the number of seconds after "-t" (stream [4:v])
+# 7 Fifth introductory frame, loop for the number of seconds after "-t" (stream [5:v])
+# 8 Fifth introductory frame (repeats here for different text), loop for the number of seconds after "-t" (stream [6:v])
+# 9 Sixth introductory frame, loop for the number of seconds after "-t" (stream [7:v])
+# 10 Input frames for main animation (stream [8:v])
+# 11 Start of complex filter graph for adding text to the animation
+# 12-15 Add text for first introductory frame (overlay [1:v] on [0:v], draw text, store in yuv420 format in [v0])
+# 16-19 Add text for second introductory frame 
+# 20-23 Add text for third introductory frame 
+# 24-27 Add text for fourth introductory frame 
+# 28-31 Repeat text of fourth introductory frame
+# 32-35 Add text for fifth introductory frame
+# 36-39 Add text for sixth introductory frame
+# 40-41 Add main animation frames on top of background layer
+# 42 Concatenate all streams
+# 43 Select video codec and set resolution of output animation
 
 USAGE="Usage: makevideo [-hf]"
 USAGELONG="Usage: makevideo [-hf]\n -f framerate (frames/sec)\n -h help\n"
@@ -48,8 +65,8 @@ ffmpeg \
     -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-C.${FILEFMT}" \
     -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-D.${FILEFMT}" \
     -loop 1 -framerate $FRAMERATE -t 3 -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 7 -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 20 -i "${IMFOLDER}/intro-frame-mw.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t 15 -i "${IMFOLDER}/intro-frame-mw.${FILEFMT}" \
     -framerate ${FRAMERATE} -i "${IMFOLDER}/frame-%06d.${FILEFMT}" \
     -filter_complex \
     "[0:v][1:v]overlay=shortest=1,
