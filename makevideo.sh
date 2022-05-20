@@ -39,6 +39,15 @@ EXPLFILE_C="text/introC.txt"
 EXPLFILE_D="text/introD.txt"
 EXPLFILE_E="text/introE.txt"
 EXPLFILE_F="text/introF.txt"
+DURATION_INTRO_A=10
+DURATION_INTRO_B=10
+DURATION_INTRO_C=10
+DURATION_INTRO_D=10
+DURATION_INTRO_E=3
+DURATION_INTRO_F=10
+DURATION_INTRO_G=15
+DURATION_INTRO=$((DURATION_INTRO_A+DURATION_INTRO_B+DURATION_INTRO_C+DURATION_INTRO_D \
+    +DURATION_INTRO_E+DURATION_INTRO_F+DURATION_INTRO_G))
 
 while getopts ":hf:" options;
 do
@@ -60,13 +69,13 @@ done
 
 ffmpeg \
     -f lavfi -i "color=c=black:s=${RESOLUTION}:r=${FRAMERATE}" \
-    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-A.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-B.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-C.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/intro-frame-D.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 3 -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 10 -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
-    -loop 1 -framerate $FRAMERATE -t 15 -i "${IMFOLDER}/intro-frame-mw.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_A} -i "${IMFOLDER}/intro-frame-A.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_B} -i "${IMFOLDER}/intro-frame-B.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_C} -i "${IMFOLDER}/intro-frame-C.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_D} -i "${IMFOLDER}/intro-frame-D.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_E} -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_F} -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_G} -i "${IMFOLDER}/intro-frame-mw.${FILEFMT}" \
     -framerate ${FRAMERATE} -i "${IMFOLDER}/frame-%06d.${FILEFMT}" \
     -filter_complex \
     "[0:v][1:v]overlay=shortest=1,
@@ -97,7 +106,25 @@ ffmpeg \
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_F}:fontcolor_expr=ffffff:
     fontsize=28:line_spacing=14:box=0:x=60:y=80,
     format=yuv420p[v6];
-    [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2,
+    [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)-80:y=(main_h-overlay_h)/2,
+    drawtext=fontfile=${FONTFILE}:textfile=text/model-intro.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,0.0,5.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/anim-intro.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,5.0,10.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/solid-body.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,10.0,20.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/differential.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,20.0,30.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/colour-coding.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,30.0,40.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/focus-on-ring.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,40.0,45.0)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/move-ring.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,45.0,52.5)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/speed-vs-longitude.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,52.5,62.5)',
+    drawtext=fontfile=${FONTFILE}:textfile=text/compare-to-data.txt:fontcolor_expr=ffffff:
+    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,62.5,75.0)',
     format=yuv420p[v7];
     [v0][v1][v2][v3][v4][v5][v6][v7]concat=n=8" \
     -pix_fmt yuv420p -vcodec libx264 -s $RESOLUTION video/milkyway-rotation.mp4

@@ -1,2 +1,3 @@
-You can now compare this graphic to the actual data from Gaia shown in the
-plot below.
+You can now compare this graphic to the
+actual data from Gaia shown in the plot
+below.

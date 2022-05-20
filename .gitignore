@@ -1,6 +1,7 @@
 *.mp4
 *.png
 frames/*.png
+frames/*.jpg
 img/*.png
 img/*.pdf
 *.swp

@@ -1,2 +1,3 @@
-We move the ring to the bottom of the screen and indicate the sky directions
-(longitude) around the ring.
+We move the ring to the bottom of the screen and
+indicate the sky directions (longitude) around the
+ring.

@@ -1,2 +1,2 @@
-Now the stars are colour coded according to their velocity across the sky,
-as seen from the Sun.
+Now the stars are colour coded according to their
+velocity across the sky, as seen from the Sun.

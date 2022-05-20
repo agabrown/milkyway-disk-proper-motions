@@ -19,6 +19,7 @@
  */
  
 import java.awt.Color;
+import java.util.List;
 
 int timeStep = -1;
 
@@ -35,7 +36,7 @@ float timeScaling = 1.0 / (periodSunInSeconds * fRate);
 /*
  * The animation sequence durations in units of the sun's revolution period.
  */
-float START_UP = 1.5;
+float START_UP = 1.0;
 float SOLIDBODY_END = START_UP + 1;
 float PMCOLORS_START = START_UP + 2;
 float ROTATION_END = START_UP + 3;
@@ -48,7 +49,7 @@ float SHOWDATA_START = START_UP + 5.25;
 /*
  * animation duration in units of Sun's revolution period
  */
-float DURATION_REVS = START_UP + SHOWDATA_START + 0.5;
+float DURATION_REVS = START_UP + SHOWDATA_START + 0.25;
 
 /*
  * Inner and our radii of ring of stars around sun for pml vs l plot, in kpc
@@ -57,7 +58,7 @@ float ringInner = 4;
 float ringOuter = 5;
 
 int sizeUnit;
-int diskRadius = 16;    // Milky Way disk radius in kpc (distance out to which particles are drawn)
+int videoSizeKpc = 30;    // Width and height of video in kpc (to set units) 
 float particleRadius;
 float textW;
 float textH;
@@ -91,15 +92,19 @@ String modelIntro, animIntro, solidBodyText, differentialText;
 String colourCodingText, focusRingText, moveRingText, speedVsLonText;
 String showDataText;
 String DEG = "°";
+String[] ffmpegLine;
+List<String> ffmpegInstructions = new ArrayList<String>();
+
+boolean addText = false;
 
 PImage pmlVsLImg;
 
 void setup() {
-  size(960, 960, P2D);
-  sizeUnit = width / (2*diskRadius);
+  size(1080, 1080, P2D);
+  sizeUnit = width / videoSizeKpc;
   textW = 10*sizeUnit;
   textH = 7*sizeUnit;
-  particleRadius = sizeUnit * 0.1;
+  particleRadius = round(sizeUnit * 0.1);
   frameRate(fRate);
   ellipseMode(RADIUS);
   
@@ -118,14 +123,52 @@ void setup() {
   textLeading(24);
   
   modelIntro = loadText("../text/model-intro.txt");
+  ffmpegLine = ffmpegLines("text/model-intro.txt", 0.0, 0.5*START_UP*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   animIntro = loadText("../text/anim-intro.txt");
+  ffmpegLine = ffmpegLines("text/anim-intro.txt", 0.5*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   solidBodyText = loadText("../text/solid-body.txt");
+  ffmpegLine = ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   differentialText = loadText("../text/differential.txt");
+  ffmpegLine = ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   colourCodingText = loadText("../text/colour-coding.txt");
+  ffmpegLine = ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   focusRingText = loadText("../text/focus-on-ring.txt");
+  ffmpegLine = ffmpegLines("text/focus-on-ring.txt", ROTATION_END*periodSunInSeconds, FOCUSONRING_END*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   moveRingText = loadText("../text/move-ring.txt");
+  ffmpegLine = ffmpegLines("text/move-ring.txt", FOCUSONRING_END*periodSunInSeconds, RINGTOPLOT_START*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
+  ffmpegLine = ffmpegLines("text/speed-vs-longitude.txt", RINGTOPLOT_START*periodSunInSeconds, SHOWDATA_START*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
   showDataText = loadText("../text/compare-to-data.txt");
+  ffmpegLine = ffmpegLines("text/compare-to-data.txt", SHOWDATA_START*periodSunInSeconds, DURATION_REVS*periodSunInSeconds);
+  ffmpegInstructions.add(ffmpegLine[0]);
+  ffmpegInstructions.add(ffmpegLine[1]);
+  
+  
+  saveStrings("../lines-ffmpeg.txt", ffmpegInstructions.toArray(new String[0]));
   
   pmlVsLImg = loadImage("../img/B_star_pml_vs_galon.png");
   imageMode(CENTER);
@@ -234,9 +277,9 @@ void draw() {
   if (time>RINGTOPLOT_START) {
     pushStyle();
     fill(255);
-    rect((xsun-4*PI-2)*sizeUnit, (ysun+9.0)*sizeUnit, (8*PI+3)*sizeUnit, 10.0*sizeUnit);
+    rect((xsun-4*PI-2.5)*sizeUnit, (ysun+9.0)*sizeUnit, (8*PI+3)*sizeUnit, 10.0*sizeUnit);
     popStyle();
-    rect((xsun-4*PI)*sizeUnit, (ysun+12.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
+    rect((xsun-4*PI-0.5)*sizeUnit, (ysun+12.0)*sizeUnit, 8*PI*sizeUnit, 6.0*sizeUnit);
     pushStyle();
     fill(0);
     pushMatrix();
@@ -247,7 +290,7 @@ void draw() {
     }
     textAlign(CENTER, BOTTOM);
     text("Galactic longitude", xsun*sizeUnit, -((ysun+12.0)*sizeUnit-60));
-    translate((xsun-4*PI)*sizeUnit-30, -((ysun+12.5)*sizeUnit));
+    translate((xsun-4*PI-0.5)*sizeUnit-30, -((ysun+12.5)*sizeUnit));
     rotate(-HALF_PI);
     textAlign(LEFT, CENTER);
     text("velocity across sky", 0, 0);
@@ -287,9 +330,9 @@ void draw() {
       pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
-        xplotp = xp[i]+(xsun-4*PI-xp[i]+(galon[i]+TWO_PI)*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
+        xplotp = xp[i]+(xsun-4*PI-0.5-xp[i]+(galon[i]+TWO_PI)*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       } else {
-        xplotp = xp[i]+(xsun-4*PI-xp[i]+galon[i]*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
+        xplotp = xp[i]+(xsun-4*PI-0.5-xp[i]+galon[i]*4)*(time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
       }
       yplotp = yp[i]+(ysun+13-yp[i]+4*(pml[i]-minpml)/(maxpml-minpml)) * 
         (time-RINGTOPLOT_START)/(RINGTOPLOT_END-RINGTOPLOT_START);
@@ -302,9 +345,9 @@ void draw() {
       pmlColor = lut.getColour(pmlscaled[i]);
       fill(pmlColor.getRed(), pmlColor.getGreen(), pmlColor.getBlue());
       if (galon[i]<0) {
-        xplotp = xsun-4*PI+(galon[i]+TWO_PI)*4;
+        xplotp = xsun-4*PI-0.5+(galon[i]+TWO_PI)*4;
       } else {
-        xplotp = xsun-4*PI+galon[i]*4;
+        xplotp = xsun-4*PI-0.5+galon[i]*4;
       }
       yplotp = ysun+13+4*(pml[i]-minpml)/(maxpml-minpml);
       if (time<=SHOWDATA_START) {
@@ -316,7 +359,7 @@ void draw() {
   
   fill(255,127,14);
   if (time<=SHOWDATA_START) {
-    ellipse(xsun*sizeUnit, ysun*sizeUnit, 3*particleRadius, 3*particleRadius);
+    ellipse(xsun*sizeUnit, ysun*sizeUnit, 4*particleRadius, 4*particleRadius);
   }
   
   /*
@@ -356,28 +399,30 @@ void draw() {
    * Captions for the animation phases.
    */
   fill(255);
-  if (time <= 0.5*START_UP) {
-    text(modelIntro, textX, textY, textW, textH);
-  } else if (time <= START_UP) {
-    text(animIntro, textX, textY, textW, textH);
-  } else if (time <= SOLIDBODY_END) {
-    text(solidBodyText, textX, textY, textW, textH);
-  } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-    text(differentialText, textX, textY,  textW, textH);
-  } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-    text(colourCodingText, textX, textY,  textW, textH);
-  } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
-    text(focusRingText, textX, textY,  textW, textH);
-  } else if (time > FOCUSONRING_END && time <=RINGTOPLOT_START) {
-    text(moveRingText, textX, textY, 25*sizeUnit, 3*sizeUnit);
-  } else if (time > RINGTOPLOT_START && time<=SHOWDATA_START) {
-    text(speedVsLonText, textX, textY, 25*sizeUnit, 3*sizeUnit);
-  } else if (time > SHOWDATA_START) {
-    text(showDataText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+  if (addText) {
+    if (time <= 0.5*START_UP) {
+      text(modelIntro, textX, textY, textW, textH);
+    } else if (time <= START_UP) {
+      text(animIntro, textX, textY, textW, textH);
+    } else if (time <= SOLIDBODY_END) {
+      text(solidBodyText, textX, textY, textW, textH);
+    } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
+      text(differentialText, textX, textY,  textW, textH);
+    } else if (time > PMCOLORS_START && time <= ROTATION_END) {
+      text(colourCodingText, textX, textY,  textW, textH);
+    } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
+      text(focusRingText, textX, textY,  textW, textH);
+    } else if (time > FOCUSONRING_END && time <=RINGTOPLOT_START) {
+      text(moveRingText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+    } else if (time > RINGTOPLOT_START && time<=SHOWDATA_START) {
+      text(speedVsLonText, textX, textY, 28*sizeUnit, 3*sizeUnit);
+    } else if (time > SHOWDATA_START) {
+      text(showDataText, textX, textY, 25*sizeUnit, 3*sizeUnit);
+    }
   }
   
   if (time > SHOWDATA_START) {
-    image(pmlVsLImg, width/2+0.5*sizeUnit, 20*sizeUnit, (8*PI+3)*sizeUnit, (8*PI+3)*sizeUnit/pmlVsLImg.width*pmlVsLImg.height);
+    image(pmlVsLImg, width/2, 20*sizeUnit, (8*PI+3)*sizeUnit, (8*PI+3)*sizeUnit/pmlVsLImg.width*pmlVsLImg.height);
   }
   
   saveFrame("../frames/frame-######.png");
@@ -459,4 +504,11 @@ String loadText(String file) {
     result = result + s + " ";
   }
   return result.trim();
+}
+
+String[] ffmpegLines(String textFile, float start, float end) {
+  String[] out = new String[2];
+  out[0]="drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:";
+  out[1]="fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,"+String.valueOf(start)+","+String.valueOf(end)+")',";
+  return out;
 }
