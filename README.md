@@ -18,16 +18,20 @@ A simple animation is made with which illustrates how the wavy pattern in a plot
 ## Credits
 
 Credits: ESA/Gaia/DPAC
+
 License: CC BY-SA 3.0 IGO
 
-###Acknowledgements
+### Acknowledgements
 Based on the paper by the Gaia Collaboration
+
     Gaia Data Release 3: A Golden Sample of Astrophysical Parameters
 
 Gaia Data Release 3 was published on 
+
     June 13, 2022
 
 Main Video/Data sets: ESA/Gaia/DPAC
+
     Anthony G.A. Brown, Yves Frémat
 
 Narrator: Orlagh Creevey
@@ -35,7 +39,5 @@ Narrator: Orlagh Creevey
 Ideas for video inspired by: [Brunetti & Pfenniger, 2010, A&A 510, A34](https://ui.adsabs.harvard.edu/abs/2010A%26A...510A..34B/abstract)
 
 Night sky image: ESA/Gaia/DPAC/André Moitinho
-Milky Way image: Stefan Payne Wardenaar
 
-The video was created with Processing, Python/Matplotlib/Cartopy, FFmpeg, and GNU Bash
-Code at: https://github.com/agabrown/milkyway-disk-proper-motions
+Milky Way image: Stefan Payne Wardenaar
