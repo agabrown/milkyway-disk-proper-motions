@@ -26,7 +26,7 @@ Based on the paper by the Gaia Collaboration _Gaia Data Release 3: A Golden Samp
 
 Gaia Data Release 3 was published on June 13, 2022
 
-Main Video/Data sets: ESA/Gaia/DPAC, Anthony G.A. Brown, Yves Frémat
+Main Video/Data sets: ESA/Gaia/DPAC, Anthony Brown, Yves Frémat, Orlagh Creevey, Rosanna Sordo, Céline Reylé, Tineke Roegiers
 
 Narrator: Orlagh Creevey
 
@@ -34,4 +34,4 @@ Ideas for video inspired by: [Brunetti & Pfenniger, 2010, A&A 510, A34](https://
 
 Night sky image: ESA/Gaia/DPAC/André Moitinho
 
-Milky Way image: Stefan Payne Wardenaar
+Milky Way image: Stefan Payne-Wardenaar

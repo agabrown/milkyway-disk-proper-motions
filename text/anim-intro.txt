@@ -1,3 +1,8 @@
+A schematic model of the Milky Way disk seen from
+above. The Sun is the big orange dot. The other
+dots represent stars orbiting around the center of
+the Milky Way disk.
+
 The animation will show the motions of the stars
 as they orbit in the disk and then show how these
 motions appear when seen from the sun.

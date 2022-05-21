@@ -1,3 +1,4 @@
-The line also coincides with the 'equator' of our sky coordinate system, with
-directions indicated along the line corresponding to Galactic longitude 'l'.
-For example the direction to the centre of the Milky Way galaxy is at l=0°
+The line also coincides with the 'equator' of our sky
+coordinate system, with directions indicated along the line
+corresponding to Galactic longitude 'l'. For example the
+direction to the centre of the Milky Way galaxy is at l=0°

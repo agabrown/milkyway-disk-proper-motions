@@ -6,14 +6,13 @@
  * Animation steps
  * ---------------
  *
- * 1. Start with artist's impression image of Milky Way (TODO)
- * 2. Overlay the simulated stars
+ * 1. Start schematic model of the Milky Way
  * 3. Show solid body rotation
  * 4. Show differential rotation
  * 5. Colour code stars by the value of proper motion in l
  * 6. Focus on ring of stars around the sun and indicate the values of l around the ring
  * 7. Move the stars in the ring to a pml vs l plot
- * 8. Show the corresponding Gaia plot for comparison (TODO)
+ * 8. Show the corresponding Gaia plot for comparison
  *
  * Anthony Brown May 2022 - May 2022
  */
@@ -94,8 +93,6 @@ String showDataText;
 String DEG = "°";
 List<String> ffmpegInstructions = new ArrayList<String>();
 
-boolean addText = false;
-
 PImage pmlVsLImg;
 
 void setup() {
@@ -121,7 +118,6 @@ void setup() {
   textSize(20);
   textLeading(24);
   
-  modelIntro = loadText("../text/model-intro.txt");
   animIntro = loadText("../text/anim-intro.txt");
   solidBodyText = loadText("../text/solid-body.txt");
   differentialText = loadText("../text/differential.txt");
@@ -131,8 +127,7 @@ void setup() {
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
   showDataText = loadText("../text/compare-to-data.txt");
 
-  ffmpegInstructions.addAll(ffmpegLines("text/model-intro.txt", 0.0, 0.6*START_UP*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.6*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.0, START_UP*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds));
@@ -367,32 +362,6 @@ void draw() {
   
   popStyle();
   popMatrix();
-
-  /*
-   * Captions for the animation phases.
-   */
-  fill(255);
-  if (addText) {
-    if (time <= 0.6*START_UP) {
-      text(modelIntro, textX, textY, textW, textH);
-    } else if (time <= START_UP) {
-      text(animIntro, textX, textY, textW, textH);
-    } else if (time <= SOLIDBODY_END) {
-      text(solidBodyText, textX, textY, textW, textH);
-    } else if (time > SOLIDBODY_END && time <= PMCOLORS_START) {
-      text(differentialText, textX, textY,  textW, textH);
-    } else if (time > PMCOLORS_START && time <= ROTATION_END) {
-      text(colourCodingText, textX, textY,  textW, textH);
-    } else if (time > ROTATION_END && time <= FOCUSONRING_END) {
-      text(focusRingText, textX, textY,  textW, textH);
-    } else if (time > FOCUSONRING_END && time <=RINGTOPLOT_START) {
-      text(moveRingText, textX, textY, 25*sizeUnit, 3*sizeUnit);
-    } else if (time > RINGTOPLOT_START && time<=SHOWDATA_START) {
-      text(speedVsLonText, textX, textY, 28*sizeUnit, 3*sizeUnit);
-    } else if (time > SHOWDATA_START) {
-      text(showDataText, textX, textY, 25*sizeUnit, 3*sizeUnit);
-    }
-  }
   
   if (time > SHOWDATA_START) {
     image(pmlVsLImg, width/2, 20*sizeUnit, (8*PI+3)*sizeUnit, (8*PI+3)*sizeUnit/pmlVsLImg.width*pmlVsLImg.height);
