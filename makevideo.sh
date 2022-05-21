@@ -124,7 +124,7 @@ ffmpeg \
     [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)-80:y=(main_h-overlay_h)/2,"$FFLINES"format=yuv420p[v7];
     [0:v][9:v]overlay=shortest=1,
     drawtext=fontfile=${FONTFILE}:textfile=${CREDITS}:fontcolor_expr=ffffff:
-    fontsize=${FONTSIZE_CREDITS}:line_spacing=${LINESPACING_CREDITS}:box=0:x=60:y=80,
+    fontsize=${FONTSIZE_CREDITS}:line_spacing=${LINESPACING_CREDITS}:box=0:x=120:y=80,
     format=yuv420p[v8];
     [v0][v1][v2][v3][v4][v5][v6][v7][v8]concat=n=9" \
     -pix_fmt yuv420p -vcodec libx264 -s $RESOLUTION video/milkyway-rotation.mp4
