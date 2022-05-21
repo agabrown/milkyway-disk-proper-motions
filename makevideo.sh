@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # Create the Milky disk rotation animation from the individual png images.
+#
+# Anthony Brown May 2022 - May 2022
 
 # Steps taken in the ffmpeg lines below
 #
@@ -69,18 +71,11 @@ do
 done
 
 FFLINES=""
-sub='FONTFILE'
 while read line;
 do
-    if grep -q "$sub" <<< "$line";
-    then
-        eval ffline=$line
-    else
-        ffline=$line
-    fi
+    eval ffline=$line
     FFLINES+="$ffline"
 done < lines-ffmpeg.txt
-echo $FFLINES
 
 ffmpeg \
     -f lavfi -i "color=c=black:s=${RESOLUTION}:r=${FRAMERATE}" \

@@ -92,7 +92,6 @@ String modelIntro, animIntro, solidBodyText, differentialText;
 String colourCodingText, focusRingText, moveRingText, speedVsLonText;
 String showDataText;
 String DEG = "°";
-String[] ffmpegLine;
 List<String> ffmpegInstructions = new ArrayList<String>();
 
 boolean addText = false;
@@ -123,50 +122,24 @@ void setup() {
   textLeading(24);
   
   modelIntro = loadText("../text/model-intro.txt");
-  ffmpegLine = ffmpegLines("text/model-intro.txt", 0.0, 0.5*START_UP*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   animIntro = loadText("../text/anim-intro.txt");
-  ffmpegLine = ffmpegLines("text/anim-intro.txt", 0.5*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   solidBodyText = loadText("../text/solid-body.txt");
-  ffmpegLine = ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   differentialText = loadText("../text/differential.txt");
-  ffmpegLine = ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   colourCodingText = loadText("../text/colour-coding.txt");
-  ffmpegLine = ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   focusRingText = loadText("../text/focus-on-ring.txt");
-  ffmpegLine = ffmpegLines("text/focus-on-ring.txt", ROTATION_END*periodSunInSeconds, FOCUSONRING_END*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   moveRingText = loadText("../text/move-ring.txt");
-  ffmpegLine = ffmpegLines("text/move-ring.txt", FOCUSONRING_END*periodSunInSeconds, RINGTOPLOT_START*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
-  ffmpegLine = ffmpegLines("text/speed-vs-longitude.txt", RINGTOPLOT_START*periodSunInSeconds, SHOWDATA_START*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
   showDataText = loadText("../text/compare-to-data.txt");
-  ffmpegLine = ffmpegLines("text/compare-to-data.txt", SHOWDATA_START*periodSunInSeconds, DURATION_REVS*periodSunInSeconds);
-  ffmpegInstructions.add(ffmpegLine[0]);
-  ffmpegInstructions.add(ffmpegLine[1]);
-  
+
+  ffmpegInstructions.addAll(ffmpegLines("text/model-intro.txt", 0.0, 0.5*START_UP*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.5*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/focus-on-ring.txt", ROTATION_END*periodSunInSeconds, FOCUSONRING_END*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/move-ring.txt", FOCUSONRING_END*periodSunInSeconds, RINGTOPLOT_START*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/speed-vs-longitude.txt", RINGTOPLOT_START*periodSunInSeconds, SHOWDATA_START*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/compare-to-data.txt", SHOWDATA_START*periodSunInSeconds, DURATION_REVS*periodSunInSeconds));
   
   saveStrings("../lines-ffmpeg.txt", ffmpegInstructions.toArray(new String[0]));
   
@@ -175,6 +148,7 @@ void setup() {
 }
 
 void draw() {
+  exit();
   background(0);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
@@ -519,9 +493,9 @@ String loadText(String file) {
  * @return
  *  Array with two lines for the ffmpeg command string.
  */
-String[] ffmpegLines(String textFile, float start, float end) {
-  String[] out = new String[2];
-  out[0]="drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:";
-  out[1]="fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,"+String.valueOf(start)+","+String.valueOf(end)+")',";
+List<String> ffmpegLines(String textFile, float start, float end) {
+  List<String> out = new ArrayList<String>();
+  out.add("drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:");
+  out.add("fontsize=28:line_spacing=14:box=0:x=60:y=80:enable=\"'between(t,"+String.valueOf(start)+","+String.valueOf(end)+")'\",");
   return out;
 }
