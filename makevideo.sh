@@ -21,11 +21,11 @@
 # 16-19 Add text for second introductory frame 
 # 20-23 Add text for third introductory frame 
 # 24-27 Add text for fourth introductory frame 
-# 28-31 Repeat text of fourth introductory frame
-# 32-35 Add text for fifth introductory frame
-# 36-39 Add text for sixth introductory frame
-# 40 Add main animation frames on top of background layer and add the text corresponding to
+# 28-31 Add text for fifth introductory frame
+# 32-35 Add text for sixth introductory frame
+# 36 Add main animation frames on top of background layer and add the text corresponding to
 #    the various animation phases (this is the string $FFLINES)
+# 37-40 Add the credits
 # 41 Concatenate all streams
 # 42 Select video codec and set resolution of output animation
 
