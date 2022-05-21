@@ -22,17 +22,11 @@ Credits: ESA/Gaia/DPAC
 License: CC BY-SA 3.0 IGO
 
 ### Acknowledgements
-Based on the paper by the Gaia Collaboration
+Based on the paper by the Gaia Collaboration _Gaia Data Release 3: A Golden Sample of Astrophysical Parameters_
 
-    Gaia Data Release 3: A Golden Sample of Astrophysical Parameters
+Gaia Data Release 3 was published on June 13, 2022
 
-Gaia Data Release 3 was published on 
-
-    June 13, 2022
-
-Main Video/Data sets: ESA/Gaia/DPAC
-
-    Anthony G.A. Brown, Yves Frémat
+Main Video/Data sets: ESA/Gaia/DPAC, Anthony G.A. Brown, Yves Frémat
 
 Narrator: Orlagh Creevey
 
