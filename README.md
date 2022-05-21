@@ -19,7 +19,7 @@ A simple animation is made with which illustrates how the wavy pattern in a plot
 
 Credits: ESA/Gaia/DPAC
 
-License: CC BY-SA 3.0 IGO
+Video license: CC BY-SA 3.0 IGO
 
 ### Acknowledgements
 Based on the paper by the Gaia Collaboration _Gaia Data Release 3: A Golden Sample of Astrophysical Parameters_
