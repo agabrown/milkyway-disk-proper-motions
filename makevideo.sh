@@ -34,7 +34,11 @@ USAGELONG='Usage: makevideo [-hf]\n -f framerate (frames/sec)\n -h help\n'
 RESOLUTION='1920x1080'
 IMFOLDER='frames'
 FILEFMT='png'
-FONTFILE='/usr/share/fonts/corefonts/andalemo.ttf'
+FONTFILE='/usr/share/fonts/roboto/Roboto-Medium.ttf'
+FONTSIZE=32
+LINESPACING=16
+FONTSIZE_CREDITS=28
+LINESPACING_CREDITS=14
 FRAMERATE=30
 EXPLFILE_A='text/introA.txt'
 EXPLFILE_B='text/introB.txt'
@@ -42,15 +46,15 @@ EXPLFILE_C='text/introC.txt'
 EXPLFILE_D='text/introD.txt'
 EXPLFILE_E='text/introE.txt'
 EXPLFILE_F='text/introF.txt'
+CREDITS='text/credits.txt'
 DURATION_INTRO_A=10
 DURATION_INTRO_B=10
 DURATION_INTRO_C=10
 DURATION_INTRO_D=10
-DURATION_INTRO_E=2
+DURATION_INTRO_E=3
 DURATION_INTRO_F=12
 DURATION_INTRO_G=15
-DURATION_INTRO=$((DURATION_INTRO_A+DURATION_INTRO_B+DURATION_INTRO_C+DURATION_INTRO_D \
-    +DURATION_INTRO_E+DURATION_INTRO_F+DURATION_INTRO_G))
+DURATION_CREDITS=20
 
 while getopts ':hf:' options;
 do
@@ -87,35 +91,40 @@ ffmpeg \
     -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_F} -i "${IMFOLDER}/B_star_pml_vs_galon.${FILEFMT}" \
     -loop 1 -framerate $FRAMERATE -t ${DURATION_INTRO_G} -i "${IMFOLDER}/intro-frame-mw.${FILEFMT}" \
     -framerate ${FRAMERATE} -i "${IMFOLDER}/frame-%06d.${FILEFMT}" \
+    -loop 1 -framerate $FRAMERATE -t ${DURATION_CREDITS} -i "${IMFOLDER}/intro-frame-A.${FILEFMT}" \
     -filter_complex \
     "[0:v][1:v]overlay=shortest=1,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_A}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v0];
     [0:v][2:v]overlay=shortest=1,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_B}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v1];
     [0:v][3:v]overlay=shortest=1,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_C}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v2];
     [0:v][4:v]overlay=shortest=1,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_D}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v3];
-    [0:v][5:v]overlay=shortest=1:x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2,
+    [0:v][5:v]overlay=shortest=1:x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2+80,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_D}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v4];
-    [0:v][6:v]overlay=shortest=1:x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2,
+    [0:v][6:v]overlay=shortest=1:x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2+80,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_E}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=(w-text_w)/2:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=(w-text_w)/2:y=80,
     format=yuv420p[v5];
     [0:v][7:v]overlay=shortest=1:x=main_w-overlay_w-60:y=60,
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_F}:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80,
+    fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=60:y=80,
     format=yuv420p[v6];
     [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)-80:y=(main_h-overlay_h)/2,"$FFLINES"format=yuv420p[v7];
-    [v0][v1][v2][v3][v4][v5][v6][v7]concat=n=8" \
+    [0:v][9:v]overlay=shortest=1,
+    drawtext=fontfile=${FONTFILE}:textfile=${CREDITS}:fontcolor_expr=ffffff:
+    fontsize=${FONTSIZE_CREDITS}:line_spacing=${LINESPACING_CREDITS}:box=0:x=60:y=80,
+    format=yuv420p[v8];
+    [v0][v1][v2][v3][v4][v5][v6][v7][v8]concat=n=9" \
     -pix_fmt yuv420p -vcodec libx264 -s $RESOLUTION video/milkyway-rotation.mp4

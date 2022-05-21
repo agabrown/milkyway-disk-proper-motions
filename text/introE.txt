@@ -2,5 +2,5 @@ Positive velocities indicate stars moving toward increasing values of
 longitude, and vice versa for negative velocities.
 
 Notice how the velocity at which the stars move goes up and down in a wavy
-pattern. Why does this happen? The following animation explains how we can
-understand the plot below.
+pattern. Why does this happen? The next part of this video explains how we
+can understand the plot below.

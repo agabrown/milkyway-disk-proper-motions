@@ -131,8 +131,8 @@ void setup() {
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
   showDataText = loadText("../text/compare-to-data.txt");
 
-  ffmpegInstructions.addAll(ffmpegLines("text/model-intro.txt", 0.0, 0.5*START_UP*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.5*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/model-intro.txt", 0.0, 0.6*START_UP*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.6*START_UP*periodSunInSeconds, START_UP*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds));
   ffmpegInstructions.addAll(ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds));
@@ -148,7 +148,6 @@ void setup() {
 }
 
 void draw() {
-  exit();
   background(0);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
@@ -260,7 +259,7 @@ void draw() {
     applyMatrix(rightHanded2DtoP2D);
     for (int k=0; k<8; k++) {
       textAlign(CENTER, BOTTOM);
-      text(String.valueOf(k*50)+DEG, (xsun-4*PI+(k*50/360.0)*8*PI)*sizeUnit, -((ysun+12.0)*sizeUnit-30));
+      text(String.valueOf(k*50)+DEG, (xsun-4*PI-0.5+(k*50/360.0)*8*PI)*sizeUnit, -((ysun+12.0)*sizeUnit-30));
     }
     textAlign(CENTER, BOTTOM);
     text("Galactic longitude", xsun*sizeUnit, -((ysun+12.0)*sizeUnit-60));
@@ -374,7 +373,7 @@ void draw() {
    */
   fill(255);
   if (addText) {
-    if (time <= 0.5*START_UP) {
+    if (time <= 0.6*START_UP) {
       text(modelIntro, textX, textY, textW, textH);
     } else if (time <= START_UP) {
       text(animIntro, textX, textY, textW, textH);
@@ -496,6 +495,7 @@ String loadText(String file) {
 List<String> ffmpegLines(String textFile, float start, float end) {
   List<String> out = new ArrayList<String>();
   out.add("drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:");
-  out.add("fontsize=28:line_spacing=14:box=0:x=60:y=80:enable=\"'between(t,"+String.valueOf(start)+","+String.valueOf(end)+")'\",");
+  out.add("fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=60:y=80:enable=\"'between(t,"+
+    String.valueOf(start)+","+String.valueOf(end)+")'\",");
   return out;
 }
