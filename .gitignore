@@ -8,6 +8,7 @@ img/*.pdf
 data/*.fits
 data/*.vot
 data/*.csv
+lines-ffmpeg.txt
 
 # Include following
 !frames/B_star_pml_vs_galon.png

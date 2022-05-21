@@ -55,7 +55,7 @@ def make_frames():
     rsun = 280
     ax.scatter(540-rsun, 540, color='C1', s=120)
     ax.text(540-rsun-20, 540, "Sun", ha='right', va='center', color='w', fontsize=20)
-    ax.text(540, 960, "Milky way face-on view - artist's impression", ha='center', color='w', fontsize=20)
+    ax.text(540, 900, "Milky way face-on view - artist's impression", ha='center', color='w', fontsize=20)
     startAngleDeg = 10
     endAngleDeg=70
     startAngle = np.deg2rad(startAngleDeg)

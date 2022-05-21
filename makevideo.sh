@@ -22,34 +22,35 @@
 # 28-31 Repeat text of fourth introductory frame
 # 32-35 Add text for fifth introductory frame
 # 36-39 Add text for sixth introductory frame
-# 40-41 Add main animation frames on top of background layer
-# 42 Concatenate all streams
-# 43 Select video codec and set resolution of output animation
+# 40 Add main animation frames on top of background layer and add the text corresponding to
+#    the various animation phases (this is the string $FFLINES)
+# 41 Concatenate all streams
+# 42 Select video codec and set resolution of output animation
 
-USAGE="Usage: makevideo [-hf]"
-USAGELONG="Usage: makevideo [-hf]\n -f framerate (frames/sec)\n -h help\n"
-RESOLUTION="1920x1080"
-IMFOLDER="frames"
-FILEFMT="png"
-FONTFILE="/usr/share/fonts/corefonts/andalemo.ttf"
+USAGE='Usage: makevideo [-hf]'
+USAGELONG='Usage: makevideo [-hf]\n -f framerate (frames/sec)\n -h help\n'
+RESOLUTION='1920x1080'
+IMFOLDER='frames'
+FILEFMT='png'
+FONTFILE='/usr/share/fonts/corefonts/andalemo.ttf'
 FRAMERATE=30
-EXPLFILE_A="text/introA.txt"
-EXPLFILE_B="text/introB.txt"
-EXPLFILE_C="text/introC.txt"
-EXPLFILE_D="text/introD.txt"
-EXPLFILE_E="text/introE.txt"
-EXPLFILE_F="text/introF.txt"
+EXPLFILE_A='text/introA.txt'
+EXPLFILE_B='text/introB.txt'
+EXPLFILE_C='text/introC.txt'
+EXPLFILE_D='text/introD.txt'
+EXPLFILE_E='text/introE.txt'
+EXPLFILE_F='text/introF.txt'
 DURATION_INTRO_A=10
 DURATION_INTRO_B=10
 DURATION_INTRO_C=10
 DURATION_INTRO_D=10
-DURATION_INTRO_E=3
-DURATION_INTRO_F=10
+DURATION_INTRO_E=2
+DURATION_INTRO_F=12
 DURATION_INTRO_G=15
 DURATION_INTRO=$((DURATION_INTRO_A+DURATION_INTRO_B+DURATION_INTRO_C+DURATION_INTRO_D \
     +DURATION_INTRO_E+DURATION_INTRO_F+DURATION_INTRO_G))
 
-while getopts ":hf:" options;
+while getopts ':hf:' options;
 do
     case "$options" in
         f)
@@ -66,6 +67,20 @@ do
             ;;
     esac
 done
+
+FFLINES=""
+sub='FONTFILE'
+while read line;
+do
+    if grep -q "$sub" <<< "$line";
+    then
+        eval ffline=$line
+    else
+        ffline=$line
+    fi
+    FFLINES+="$ffline"
+done < lines-ffmpeg.txt
+echo $FFLINES
 
 ffmpeg \
     -f lavfi -i "color=c=black:s=${RESOLUTION}:r=${FRAMERATE}" \
@@ -106,25 +121,6 @@ ffmpeg \
     drawtext=fontfile=${FONTFILE}:textfile=${EXPLFILE_F}:fontcolor_expr=ffffff:
     fontsize=28:line_spacing=14:box=0:x=60:y=80,
     format=yuv420p[v6];
-    [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)-80:y=(main_h-overlay_h)/2,
-    drawtext=fontfile=${FONTFILE}:textfile=text/model-intro.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,0.0,5.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/anim-intro.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,5.0,10.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/solid-body.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,10.0,20.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/differential.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,20.0,30.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/colour-coding.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,30.0,40.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/focus-on-ring.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,40.0,45.0)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/move-ring.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,45.0,52.5)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/speed-vs-longitude.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,52.5,62.5)',
-    drawtext=fontfile=${FONTFILE}:textfile=text/compare-to-data.txt:fontcolor_expr=ffffff:
-    fontsize=28:line_spacing=14:box=0:x=60:y=80:enable='between(t,62.5,75.0)',
-    format=yuv420p[v7];
+    [0:v][8:v]overlay=shortest=1:x=(main_w-overlay_w)-80:y=(main_h-overlay_h)/2,"$FFLINES"format=yuv420p[v7];
     [v0][v1][v2][v3][v4][v5][v6][v7]concat=n=8" \
     -pix_fmt yuv420p -vcodec libx264 -s $RESOLUTION video/milkyway-rotation.mp4

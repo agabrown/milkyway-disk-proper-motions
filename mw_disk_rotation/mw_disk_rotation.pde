@@ -506,6 +506,19 @@ String loadText(String file) {
   return result.trim();
 }
 
+/**
+ * Generate the ffmpeg instructions with the correct timing for the text overlays in the video produced with ../makevideo.sh.
+ *
+ * @param textfile
+ *  Name of textfile for text input to video
+ * @param start
+ *  Start time of text rendering (from start of this animation)
+ * @param end
+ *  End time of text rendering (from start of this animation)
+ *
+ * @return
+ *  Array with two lines for the ffmpeg command string.
+ */
 String[] ffmpegLines(String textFile, float start, float end) {
   String[] out = new String[2];
   out[0]="drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:";
