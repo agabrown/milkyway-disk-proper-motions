@@ -150,7 +150,6 @@ void setup() {
 }
 
 void draw() {
-  exit();
   background(0);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
