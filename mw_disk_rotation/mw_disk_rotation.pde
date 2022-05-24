@@ -127,14 +127,21 @@ void setup() {
   speedVsLonText = loadText("../text/speed-vs-longitude.txt");
   showDataText = loadText("../text/compare-to-data.txt");
 
-  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.0, START_UP*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, SOLIDBODY_END*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, PMCOLORS_START*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, ROTATION_END*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/focus-on-ring.txt", ROTATION_END*periodSunInSeconds, FOCUSONRING_END*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/move-ring.txt", FOCUSONRING_END*periodSunInSeconds, RINGTOPLOT_START*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/speed-vs-longitude.txt", RINGTOPLOT_START*periodSunInSeconds, SHOWDATA_START*periodSunInSeconds));
-  ffmpegInstructions.addAll(ffmpegLines("text/compare-to-data.txt", SHOWDATA_START*periodSunInSeconds, DURATION_REVS*periodSunInSeconds));
+  ffmpegInstructions.addAll(ffmpegLines("text/anim-intro.txt", 0.0, START_UP*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/solid-body.txt", START_UP*periodSunInSeconds, 
+    SOLIDBODY_END*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/differential.txt", SOLIDBODY_END*periodSunInSeconds, 
+    PMCOLORS_START*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/colour-coding.txt", PMCOLORS_START*periodSunInSeconds, 
+    ROTATION_END*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/focus-on-ring.txt", ROTATION_END*periodSunInSeconds, 
+    FOCUSONRING_END*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/move-ring.txt", FOCUSONRING_END*periodSunInSeconds, 
+    RINGTOPLOT_START*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/speed-vs-longitude.txt", RINGTOPLOT_START*periodSunInSeconds, 
+    DURATION_REVS*periodSunInSeconds, 60, 80));
+  ffmpegInstructions.addAll(ffmpegLines("text/compare-to-data.txt", SHOWDATA_START*periodSunInSeconds, 
+    DURATION_REVS*periodSunInSeconds, 60, 300));
   
   saveStrings("../lines-ffmpeg.txt", ffmpegInstructions.toArray(new String[0]));
   
@@ -143,6 +150,7 @@ void setup() {
 }
 
 void draw() {
+  exit();
   background(0);
   timeStep = timeStep + 1;
   time = timeStep * timeScaling;
@@ -457,14 +465,19 @@ String loadText(String file) {
  *  Start time of text rendering (from start of this animation)
  * @param end
  *  End time of text rendering (from start of this animation)
+ * @param x
+ *  Horizontal position of text from left edge of video (pixels).
+ * @param y
+ *  Vertical position of text from top edge of video (pixels).
  *
  * @return
  *  Array with two lines for the ffmpeg command string.
  */
-List<String> ffmpegLines(String textFile, float start, float end) {
+List<String> ffmpegLines(String textFile, float start, float end, int x, int y) {
   List<String> out = new ArrayList<String>();
   out.add("drawtext=fontfile=${FONTFILE}:textfile="+textFile+":fontcolor_expr=ffffff:");
-  out.add("fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x=60:y=80:enable=\"'between(t,"+
+  out.add("fontsize=${FONTSIZE}:line_spacing=${LINESPACING}:box=0:x="+String.valueOf(x)+
+    ":y="+String.valueOf(y)+":enable=\"'between(t,"+
     String.valueOf(start)+","+String.valueOf(end)+")'\",");
   return out;
 }
