@@ -9,24 +9,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from matplotlib.gridspec import GridSpec
-from matplotlib.cm import ScalarMappable
-from matplotlib.colors import LogNorm, Normalize
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 from astropy.table import Table
 import astropy.units as u
 import astropy.constants as c
-from astropy.coordinates import Galactocentric, ICRS, CartesianDifferential
+from astropy.coordinates import ICRS
 from astropy.visualization import HistEqStretch, ImageNormalize
 au_km_year_per_sec = (c.au / (1*u.yr).to(u.s)).to(u.km/u.s).value
 
 from agabpylib.plotting.plotstyles import useagab, apply_tufte
-from agabpylib.stats.robuststats import rse
-from pygaia.astrometry.constants import au_km_year_per_sec as Av
 from pygaia.astrometry.coordinates import Transformations, CoordinateTransformation
 
-from gala.potential.potential.builtin.special import BovyMWPotential2014
-from diskkinematicmodel import *
 from icrstogal import *
 
 _Rsun = 8277.0*u.pc

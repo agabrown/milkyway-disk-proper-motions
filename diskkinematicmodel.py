@@ -4,7 +4,7 @@ strictly circular orbits around the vertical axis of the Milky Way disk plane. T
 coordinates the velocity vectors of the stars are (V_R, V_phi, V_z) = (0, V_phi(R), 0), where V_phi(R) is the rotation
 curve of the disk. The velocity field does not change with z.
 
-Anthony Brown Feb 2022 - Feb 2022
+Anthony Brown Feb 2022 - May 2022
 """
 
 import numpy as np
@@ -28,7 +28,7 @@ class FlatRotationCurve(BovyMWPotential2014):
     This is a hack to make it easy to switch between the simple kinematic model and a model with a rotation curve
     derived from a proper potential.
     
-    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity METHOD.
+    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity AND oort_ab METHODS.
     """
     
     def __init__(self, vcirc):
@@ -47,6 +47,26 @@ class FlatRotationCurve(BovyMWPotential2014):
     def circular_velocity(self, q):
         return self.the_pot.circular_velocity(q)*0.0 + self.vcirc
 
+    def oort_ab(self, q):
+        """
+        Get the Oort A and B parameters at the position q.
+
+        Parameters
+        ----------
+        
+        q : gala PhaseSpacePosition, Quantity, array_like
+            The position for which to obtain A and B
+
+        Returns
+        -------
+        
+        Oort A and B parameters in km/s/kpc
+        """
+        rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
+        oortA = 0.5*self.circular_velocity(q)/rq
+        oortB = -oortA
+        return oortA, oortB
+
 
 class SolidBodyRotationCurve(BovyMWPotential2014):
     """
@@ -56,7 +76,7 @@ class SolidBodyRotationCurve(BovyMWPotential2014):
     This is a hack to make it easy to switch between the simple kinematic model and a model with a rotation curve
     derived from a proper potential.
     
-    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity METHOD.
+    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity AND oort_ab METHODS.
     """
     
     def __init__(self, vcircsun, rsun):
@@ -79,6 +99,23 @@ class SolidBodyRotationCurve(BovyMWPotential2014):
         rq = np.sqrt(q[0]**2 + q[1]**2).to(u.pc)
         return self.the_pot.circular_velocity(q)*0.0 + self.vcircsun*(rq/self.rsun).value
 
+    def oort_ab(self, q):
+        """
+        Get the Oort A and B parameters at the position q.
+
+        Parameters
+        ----------
+        
+        q : gala PhaseSpacePosition, Quantity, array_like
+            The position for which to obtain A and B
+
+        Returns
+        -------
+        
+        Oort A and B parameters in km/s/kpc
+        """
+        return 0.0*u.km/u.s/u.kpc, 0.0*u.km/u.s/u.kpc
+
 
 class BrunettiPfennigerRotationCurve(BovyMWPotential2014):
     """
@@ -88,7 +125,7 @@ class BrunettiPfennigerRotationCurve(BovyMWPotential2014):
     This is a hack to make it easy to switch between the simple kinematic model and a model with a rotation curve
     derived from a proper potential.
     
-    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity METHOD.
+    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity AND oort_ab METHODS.
     """
     
     def __init__(self, vcircsun, rsun, h, p):
@@ -117,6 +154,29 @@ class BrunettiPfennigerRotationCurve(BovyMWPotential2014):
     def circular_velocity(self, q):
         rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
         return self.the_pot.circular_velocity(q)*0.0 + self.v0*(rq/self.h * np.power(1 + (rq/self.h).value**2, (self.p-2)/4))
+
+    def oort_ab(self, q):
+        """
+        Get the Oort A and B parameters at the position q.
+
+        Parameters
+        ----------
+        
+        q : gala PhaseSpacePosition, Quantity, array_like
+            The position for which to obtain A and B
+
+        Returns
+        -------
+        
+        Oort A and B parameters in km/s/kpc
+        """
+        rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
+        rhsqr = rq*rq/(self.h*self.h)
+        rhterm = 1.0 + rhsqr
+        dvdr = self.v0/self.h*np.power(rhterm,(self.p-2)/4)*(1.0+(self.p-2)/2*rhsqr*np.power(rhterm, -1))
+        oortA = 0.5*(self.the_pot.circular_velocity(q)/rq - dvdr)
+        oortB = 0.5*(-self.the_pot.circular_velocity(q)/rq - dvdr)
+        return oortA, oortB
 
 
 class DiskKinematicModel:
@@ -164,6 +224,23 @@ class DiskKinematicModel:
         Circular velocity as array of shape (N). Units of km/s.
         """
         return self.pot.circular_velocity(pos)
+
+    def get_oort_ab(self, q):
+        """
+        Get the Oort A and B parameters at the position q.
+
+        Parameters
+        ----------
+        
+        q : gala PhaseSpacePosition, Quantity, array_like
+            The position for which to obtain A and B
+
+        Returns
+        -------
+        
+        Oort A and B parameters in km/s/kpc
+        """
+        return self.pot.oort_ab(q)
 
     def observables(self, distance, l, b, vsunpec=np.nan, sunpos=np.nan):
         """
