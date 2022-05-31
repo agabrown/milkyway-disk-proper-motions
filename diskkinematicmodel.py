@@ -20,6 +20,47 @@ from pygaia.astrometry.vectorastrometry import normal_triad
 _au_km_year_per_sec = (c.au / (1*u.yr).to(u.s)).to(u.km/u.s).value
 
 
+class SlopedRotationCurve(BovyMWPotential2014):
+    """
+    Implements a very simple kinematic model of the disk in which the circular velocity is given by a linear
+    relation Vc(R) = Vc(Rsun) + slope*(R-Rsun). 
+
+    This is a hack to make it easy to switch between the simple kinematic model and a model with a rotation curve
+    derived from a proper potential.
+    
+    THIS IS NOT A PROPER Gala POTENTIAL, ONLY USE THE circular_velocity AND oort_ab METHODS.
+    """
+
+    def __init__(self, vcircsun, rsun, slope):
+        """
+        Class constructor/initializer.
+        
+        Parameters
+        ----------
+        
+        vcircsun: float
+            Circular velocity at the position of the sun in km/s.
+        rsun: float
+            Galactocentric distance of the Sun in pc.
+        slope: float
+            Value of dVc(R)/dR in km/s/kpc
+        """
+        self.the_pot = BovyMWPotential2014()
+        self.vcircsun = vcircsun*u.km/u.s
+        self.rsun = rsun*u.pc
+        self.slope = slope*u.km/u.s/u.kpc
+
+    def circular_velocity(self, q):
+        rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
+        return self.the_pot.circular_velocity(q)*0.0 + self.vcircsun + ((rq-self.rsun)*self.slope).to(u.km/u.s)
+
+    def oort_ab(self, q):
+        rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
+        oortA = 0.5*(self.circular_velocity(q)/rq-self.slope)
+        oortB = 0.5*(-self.circular_velocity(q)/rq-self.slope)
+        return oortA, oortB
+
+
 class FlatRotationCurve(BovyMWPotential2014):
     """
     Implements a very simple kinematic model of the disk in which the circular velocity is constant everywhere. 
@@ -48,20 +89,6 @@ class FlatRotationCurve(BovyMWPotential2014):
         return self.the_pot.circular_velocity(q)*0.0 + self.vcirc
 
     def oort_ab(self, q):
-        """
-        Get the Oort A and B parameters at the position q.
-
-        Parameters
-        ----------
-        
-        q : gala PhaseSpacePosition, Quantity, array_like
-            The position for which to obtain A and B
-
-        Returns
-        -------
-        
-        Oort A and B parameters in km/s/kpc
-        """
         rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
         oortA = 0.5*self.circular_velocity(q)/rq
         oortB = -oortA
@@ -100,20 +127,6 @@ class SolidBodyRotationCurve(BovyMWPotential2014):
         return self.the_pot.circular_velocity(q)*0.0 + self.vcircsun*(rq/self.rsun).value
 
     def oort_ab(self, q):
-        """
-        Get the Oort A and B parameters at the position q.
-
-        Parameters
-        ----------
-        
-        q : gala PhaseSpacePosition, Quantity, array_like
-            The position for which to obtain A and B
-
-        Returns
-        -------
-        
-        Oort A and B parameters in km/s/kpc
-        """
         return 0.0*u.km/u.s/u.kpc, 0.0*u.km/u.s/u.kpc
 
 
@@ -156,20 +169,6 @@ class BrunettiPfennigerRotationCurve(BovyMWPotential2014):
         return self.the_pot.circular_velocity(q)*0.0 + self.v0*(rq/self.h * np.power(1 + (rq/self.h).value**2, (self.p-2)/4))
 
     def oort_ab(self, q):
-        """
-        Get the Oort A and B parameters at the position q.
-
-        Parameters
-        ----------
-        
-        q : gala PhaseSpacePosition, Quantity, array_like
-            The position for which to obtain A and B
-
-        Returns
-        -------
-        
-        Oort A and B parameters in km/s/kpc
-        """
         rq = np.sqrt(q[0]**2 + q[1]**2).to(u.kpc)
         rhsqr = rq*rq/(self.h*self.h)
         rhterm = 1.0 + rhsqr
