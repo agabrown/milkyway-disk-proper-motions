@@ -55,7 +55,6 @@ def make_frames():
     rsun = 280
     ax.scatter(540-rsun, 540, color='C1', s=120)
     ax.text(540-rsun-20, 540, "Sun", ha='right', va='center', color='w', fontsize=20)
-    ax.text(540, 900, "Milky way face-on view - artist's impression", ha='center', color='w', fontsize=20)
     startAngleDeg = 10
     endAngleDeg=70
     startAngle = np.deg2rad(startAngleDeg)
@@ -65,6 +64,8 @@ def make_frames():
     rotarrow = FancyArrowPatch(posA=rotA, posB=rotB, connectionstyle=f"angle3, angleA={90-startAngleDeg}, angleB={90-endAngleDeg}", 
         color='w', linewidth=3, arrowstyle="->, head_length=6, head_width=4")
     ax.add_artist(rotarrow)
+    plt.savefig("img/intro-frame-mw-notext.png")
+    ax.text(540, 900, "Milky way face-on view - artist's impression", ha='center', color='w', fontsize=20)
     plt.savefig("frames/intro-frame-mw.png")
 
     plt.close(fig)
