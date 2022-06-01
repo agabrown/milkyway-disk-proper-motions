@@ -2,6 +2,13 @@
 
 A simple animation is made with which illustrates how the wavy pattern in a plot of proper motions in galactic longitude as a function of longitude arises from the differential rotation of the Milky Way's disk. This is part of the outreach for [Gaia DR3](https://www.cosmos.esa.int/web/gaia/data-release-3) in connection with the paper _Gaia Data Release 3: Golden Sample of Astrophysical Parameters Gaia Collaboration, Creevey, O.L., et al., 2022, A&A_.
 
+## Repository contents
+
+* `data` folder with data from the Golden sample paper
+* `notebooks` Jupyter notebooks with code to analyze and visualize the data
+* `mw_disk_rotation` folder with the Processing and Java code for the animation of the rotating disk
+* `img`, `text`, `frames`, `video` folder containing the images produced with the Python code, the video text and frames, and the video (frames and video are not stored on Github)
+
 ## Reproducing the video
 
 1. Download the necessary data (TODO: describe how)
@@ -32,6 +39,6 @@ Narrator: Orlagh Creevey
 
 Ideas for video inspired by: [Brunetti & Pfenniger, 2010, A&A 510, A34](https://ui.adsabs.harvard.edu/abs/2010A%26A...510A..34B/abstract)
 
-Night sky image: ESA/Gaia/DPAC/André Moitinho
+Night sky image: ESA/Gaia/DPAC/André Moitinho, CC BY-SA 3.0 IGO
 
 Milky Way image: Stefan Payne-Wardenaar

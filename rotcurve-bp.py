@@ -78,8 +78,8 @@ def parseCommandLineArguments():
     Set up command line parsing.
     """
     parser = argparse.ArgumentParser(description="""Rotation curve from Brunetti and Pfenniger (2010).""")
-    parser.add_argument("--pexp", dest='pexp', type=float, default=-0.5, help="""Exponent p in equation""")
-    parser.add_argument("--scalelength", dest='hlen', type=float, default=1.0, help="""Potential scale length (kpc)""")
+    parser.add_argument("--pexp", dest='pexp', type=float, default=-0.55, help="""Exponent p in equation""")
+    parser.add_argument("--scalelength", dest='hlen', type=float, default=3.0, help="""Potential scale length (kpc)""")
     parser.add_argument("--vcsun", dest='vcsun', type=float, default=234.0, help="""Circular velocity for the sun (km/s)""")
     parser.add_argument("--rsun", dest='rsun', type=float, default=8.277, help="""Distance sun to Galactic centre (kpc)""")
     parser.add_argument("--dr3story", action="store_true", dest="dr3story", help="""Produce a version for the Gaia DR3 story on Milky Way rotation""")
