@@ -43,19 +43,25 @@ def make_plot(args):
     fig, ax = plt.subplots(1, 1, figsize=(8,6), tight_layout=True)
     apply_tufte(ax)
 
-    ax.plot(r, vc)
-    ax.set_xlabel(r'$R$ [kpc]')
-    ax.set_ylabel(r'$V_\mathrm{circ}$ [km s$^{-1}$]')
-    ax.text(0.95, 0.33, fr"$p = {args['pexp']:.2f}$",
-            transform=ax.transAxes, ha='right', fontsize=12)
-    ax.text(0.95, 0.26, fr"$h = {args['hlen']:.1f}$ kpc",
-            transform=ax.transAxes, ha='right', fontsize=12)
-    ax.text(0.95, 0.19, fr"$R_\odot = {args['rsun']:.1f}$ kpc",
-            transform=ax.transAxes, ha='right', fontsize=12)
-    ax.text(0.95, 0.12, fr"$V_{{\mathrm{{circ}},\odot}} = {args['vcsun']:.1f}$ km s$^{{-1}}$",
-            transform=ax.transAxes, ha='right', fontsize=12)
-    ax.text(0.95, 0.05, fr'$dV_\mathrm{{circ}}/dR$ at sun: {slopesun:.1f} km s$^{{-1}}$ kpc$^{{-1}}$',
-            transform=ax.transAxes, ha='right', fontsize=12)
+    ax.plot(r, vc, zorder=-1)
+    if not args['dr3story']:
+        ax.set_xlabel(r'$R$ [kpc]')
+        ax.set_ylabel(r'$V_\mathrm{circ}$ [km s$^{-1}$]')
+        ax.text(0.95, 0.33, fr"$p = {args['pexp']:.2f}$",
+                transform=ax.transAxes, ha='right', fontsize=12)
+        ax.text(0.95, 0.26, fr"$h = {args['hlen']:.1f}$ kpc",
+                transform=ax.transAxes, ha='right', fontsize=12)
+        ax.text(0.95, 0.19, fr"$R_\odot = {args['rsun']:.1f}$ kpc",
+                transform=ax.transAxes, ha='right', fontsize=12)
+        ax.text(0.95, 0.12, fr"$V_{{\mathrm{{circ}},\odot}} = {args['vcsun']:.1f}$ km s$^{{-1}}$",
+                transform=ax.transAxes, ha='right', fontsize=12)
+        ax.text(0.95, 0.05, fr'$dV_\mathrm{{circ}}/dR$ at sun: {slopesun:.1f} km s$^{{-1}}$ kpc$^{{-1}}$',
+                transform=ax.transAxes, ha='right', fontsize=12)
+    else:
+        ax.scatter(x, v0*rotcur(x), c='C1', s=100)
+        ax.set_xlabel(r'Distance $R$ in kiloparsec')
+        ax.set_ylabel(r'Rotation speed $V$ in km/s')
+
 
     basename = 'RotationCurve-BP2010'
     if args['pdfOutput']:
@@ -76,6 +82,7 @@ def parseCommandLineArguments():
     parser.add_argument("--scalelength", dest='hlen', type=float, default=1.0, help="""Potential scale length (kpc)""")
     parser.add_argument("--vcsun", dest='vcsun', type=float, default=234.0, help="""Circular velocity for the sun (km/s)""")
     parser.add_argument("--rsun", dest='rsun', type=float, default=8.277, help="""Distance sun to Galactic centre (kpc)""")
+    parser.add_argument("--dr3story", action="store_true", dest="dr3story", help="""Produce a version for the Gaia DR3 story on Milky Way rotation""")
     parser.add_argument("-p", action="store_true", dest="pdfOutput", help="Make PDF plot")
     parser.add_argument("-b", action="store_true", dest="pngOutput", help="Make PNG plot")
     cmdargs = vars(parser.parse_args())
