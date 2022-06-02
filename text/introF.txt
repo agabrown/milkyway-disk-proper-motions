@@ -4,6 +4,4 @@ causes the disk as a whole to rotate in a
 clockwise direction as indicated by the arrow.
 
 The following animation shows how the motions of
-the stars in the disk lead to the wavy pattern we
-see in the velocities at which the stars move
-across the sky, as seen from the Sun.
+the stars in the disk lead to the wavy pattern.

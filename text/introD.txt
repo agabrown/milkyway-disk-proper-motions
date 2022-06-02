@@ -1,5 +1,4 @@
 Stars move across the sky and we now focus on the motions of
-stars along the Milky Way plane, or along Galactic
-longitude. If we plot the angular velocity (µ) at which the
-stars move across the sky versus their longitude we see the
-following graphic.
+stars along Galactic longitude. If we plot the angular velocity
+(µ) at which the stars move across the sky versus their longitude
+we see the following graphic.

@@ -2,7 +2,7 @@ Credits: ESA/Gaia/DPAC
 License: CC BY-SA 3.0 IGO
 
 Acknowledgements:
-Based on the paper by the Gaia Collaboration
+Based on the paper by Gaia Collaboration, Creevey, et al., 2022
     Gaia Data Release 3: A Golden Sample of Astrophysical Parameters
 
 Gaia Data Release 3 was published on June 13, 2022
@@ -13,7 +13,7 @@ Main Video/Data sets: ESA/Gaia/DPAC
 
 Narrator: Orlagh Creevey
 
-Ideas for video inspired by: Brunetti & Pfenniger, 2010, A&A 510, A34
+Idea for video inspired by: Brunetti & Pfenniger, 2010, A&A 510, A34
 
 Night sky image: ESA/Gaia/DPAC/André Moitinho CC BY-SA 3.0 IGO
 Milky Way image: Stefan Payne-Wardenaar

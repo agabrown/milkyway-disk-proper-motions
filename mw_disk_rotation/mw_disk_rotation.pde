@@ -14,7 +14,7 @@
  * 7. Move the stars in the ring to a pml vs l plot
  * 8. Show the corresponding Gaia plot for comparison
  *
- * Anthony Brown May 2022 - May 2022
+ * Anthony Brown May 2022 - Jun 2022
  */
  
 import java.awt.Color;
@@ -345,6 +345,7 @@ void draw() {
     stroke(255);
     fill(255);
     strokeWeight(2);
+    textSize(24);
     for (int k=0; k<12; k++) {
       galontext = k*30;
       angle = radians(galontext);

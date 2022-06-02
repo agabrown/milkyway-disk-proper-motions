@@ -1,2 +1,2 @@
-Motions of the stars if the Milky Way rotated
-as a solid body.
+This shows the motions of the stars if the Milky Way 
+rotated as a solid body.
