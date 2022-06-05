@@ -5,6 +5,9 @@ rotation and how this leads to the observed proper motion in galactic longitude 
 Anthony Brown May 2022 - May 2022
 """
 
+import sys
+sys.path.insert(1, './notebooks/')
+
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
@@ -92,9 +95,9 @@ def make_plots(args):
     Nothing
     """
     if args['type'] in ['O','B','A']:
-        dr3table = load_data('data/OBA_NORR_R03_extended_redd.fits')
+        dr3table = load_data('data/OBAGoldenSample.fits')
     elif args['type'] in ['F', 'G', 'K', 'M', 'giants']:
-        dr3table = load_data('data/FGKM_gold.fits')
+        dr3table = load_data('data/FGKMGoldenSample.fits')
     else:
         print("Unknown source type!")
         exit(0);
