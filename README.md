@@ -5,7 +5,7 @@ A simple animation is made with which illustrates how the wavy pattern in a plot
 ## Repository contents
 
 * `data` folder with data from the Golden sample paper
-* `notebooks` Jupyter notebooks with code to analyze and visualize the data
+* `notebooks` Jupyter notebooks with code to reproduce the analysis of the OBA sample and the Milky Way rotation curve modelling from the Golden Sample paper.
 * `mw_disk_rotation` folder with the Processing and Java code for the animation of the rotating disk
 * `img`, `text`, `frames`, `video` folder containing the images produced with the Python code, the video text and frames, and the video (frames and video are not stored on Github)
 
