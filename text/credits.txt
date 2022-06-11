@@ -16,7 +16,7 @@ Narrator: Orlagh Creevey
 Idea for video inspired by: Brunetti & Pfenniger, 2010, A&A 510, A34
 
 Night sky image: ESA/Gaia/DPAC/André Moitinho CC BY-SA 3.0 IGO
-Milky Way image: Stefan Payne-Wardenaar
+Milky Way image: Stefan Payne-Wardenaar/MPIA
 
 The video was created with Processing, Python/Matplotlib/Cartopy, FFmpeg, and GNU Bash
 Code at: https://github.com/agabrown/milkyway-disk-proper-motions
