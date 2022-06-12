@@ -1,6 +1,6 @@
 # Proper motions in the disk of the Milky Way
 
-An [animated infographic](https://youtu.be/EjAUqRwGlaQ) is made with which illustrates how the wavy pattern in a plot of proper motions in galactic longitude as a function of longitude arises from the differential rotation of the Milky Way's disk. This is part of the outreach for [Gaia DR3](https://www.cosmos.esa.int/web/gaia/data-release-3) in connection with the paper _Gaia Data Release 3: Golden Sample of Astrophysical Parameters Gaia Collaboration, Creevey, O.L., et al., 2022, A&A_.
+An [animated infographic](https://youtu.be/5b-eDLVHwrg) is made with which illustrates how the wavy pattern in a plot of proper motions in galactic longitude as a function of longitude arises from the differential rotation of the Milky Way's disk. This is part of the outreach for [Gaia DR3](https://www.cosmos.esa.int/web/gaia/data-release-3) in connection with the paper _Gaia Data Release 3: Golden Sample of Astrophysical Parameters Gaia Collaboration, Creevey, O.L., et al., 2022, A&A_.
 
 <img src=./frames/B_star_pml_vs_galon.png></img>
 
