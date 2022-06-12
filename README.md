@@ -8,6 +8,7 @@ An [animated infographic](https://youtu.be/EjAUqRwGlaQ) is made with which illus
 
 * `data` folder with data from the Golden sample paper
 * `notebooks` Jupyter notebooks with code to reproduce the analysis of the OBA sample and the Milky Way rotation curve modelling from the Golden Sample paper.
+  - This folder also contains the [Stan](https://mc-stan.org/) model code.
 * `mw_disk_rotation` folder with the Processing and Java code for the animation of the rotating disk
 * `img`, `text`, `frames`, `video` folder containing the images produced with the Python code, the video text and frames, and the video (frames and video are not stored on Github)
 
