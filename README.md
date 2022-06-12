@@ -12,6 +12,9 @@ An [animated infographic](https://youtu.be/5b-eDLVHwrg) is made with which illus
 * `mw_disk_rotation` folder with the Processing and Java code for the animation of the rotating disk
 * `img`, `text`, `frames`, `video` folder containing the images produced with the Python code, the video text and frames, and the video (frames and video are not stored on Github)
 
+### Python dependencies
+[NumPy](https://numpy.org/), [SciPy](https://scipy.org/), [Matplotlib](https://matplotlib.org/), [Astropy](https://www.astropy.org/), [PyGaia](https://pypi.org/project/PyGaia/), [CmdStanPy](https://github.com/stan-dev/cmdstanpy), [HealPy](https://github.com/healpy/healpy), [ArviZ](https://python.arviz.org/en/latest/), [corner](https://corner.readthedocs.io/en/latest/), [Gala](http://gala.adrian.pw/en/latest/), [Cartopy](https://scitools.org.uk/cartopy/docs/latest/), [scikit-learn](https://scikit-learn.org/stable/)
+
 ## Reproducing the video
 
 1. Download the necessary data (see [this notebook](./notebooks/FitMWDiskKinModel.ipynb)).
