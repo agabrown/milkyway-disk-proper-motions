@@ -1,0 +1,24 @@
+# Maptplotlib style file: Anthony Brown June 2022 - June 2022
+
+text.usetex: False
+
+font.family: sans-serif
+font.size: 18
+
+xtick.major.size: 6
+ytick.major.size: 6
+xtick.minor.size: 4
+ytick.minor.size: 4
+xtick.direction: out
+ytick.direction: out
+
+lines.linewidth: 2
+axes.linewidth: 2
+axes.facecolor: white
+
+grid.color: cbcbcb
+grid.linewidth: 0.5
+grid.linestyle: -
+grid.alpha: 1.0
+figure.dpi: 80
+figure.subplot.bottom: 0.125

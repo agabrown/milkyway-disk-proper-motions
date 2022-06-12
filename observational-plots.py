@@ -2,7 +2,7 @@
 Produce observational counterparts of the material contained in the animation that explains Milky Way differential
 rotation and how this leads to the observed proper motion in galactic longitude vs galactic longitude plot.
 
-Anthony Brown May 2022 - May 2022
+Anthony Brown May 2022 - June 2022
 """
 
 import sys
@@ -21,7 +21,6 @@ from astropy.coordinates import ICRS
 from astropy.visualization import HistEqStretch, ImageNormalize
 au_km_year_per_sec = (c.au / (1*u.yr).to(u.s)).to(u.km/u.s).value
 
-from agabpylib.plotting.plotstyles import useagab, apply_tufte
 from pygaia.astrometry.coordinates import Transformations, CoordinateTransformation
 
 from icrstogal import *
@@ -124,23 +123,20 @@ def make_plots(args):
         startype = (dr3table['logg_gspphot'] <= 3.0)
 
     name = args['type']+'_'
-    annotation = args['type']+' stars'
 
     sample_filter =  startype & plxfilter & nonhalo & zfilter
 
     print(f"Number of stars in selected sample: {dr3table['ra'][sample_filter].size}")
 
-    useagab(axislinewidths=2)
+    plt.style.use('agab.mplstyle')
     fig, ax_lmul = plt.subplots(1, 1, tight_layout=True, figsize=(14,5))
 
-    im_lmul = ax_lmul.hexbin(dr3table['l'][sample_filter], dr3table['pml'][sample_filter], 
+    ax_lmul.hexbin(dr3table['l'][sample_filter], dr3table['pml'][sample_filter], 
                              gridsize=[360,100], mincnt=1, bins='log', extent=[0,360,-20,20])
     ax_lmul.set_xlabel(r'Galactic longitude')
     ax_lmul.xaxis.set_major_formatter('${x:.0f}^\circ$')
     if args['simpleLang']:
         ax_lmul.set_ylabel(r'$\mu$ [mas yr$^{-1}$]')
-        #ax_lmul.set_ylabel(r'Speed on the sky $\longrightarrow$')
-        #ax_lmul.tick_params(left=False, labelleft=False)
     else:
         ax_lmul.set_ylabel(r'$\mu_{\ell*}$ [mas yr$^{-1}$]')
     ax_lmul.set_xlim(0,360)

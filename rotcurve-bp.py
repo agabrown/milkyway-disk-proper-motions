@@ -2,14 +2,17 @@
 Plot the rotation curve from Brunetti & Pfenniger (2010) for specified values of v0, h, and p.
 The paper can be found at: https://ui.adsabs.harvard.edu/abs/2010A%26A...510A..34B/abstract
 
-Anthony Brown May 2022 - May 2022
+Anthony Brown May 2022 - June 2022
 """
+
+import sys
+sys.path.insert(1, './notebooks/')
 
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-from agabpylib.plotting.plotstyles import useagab, apply_tufte
+from plotstyles import useagab, apply_tufte
 
 
 def make_plot(args):
