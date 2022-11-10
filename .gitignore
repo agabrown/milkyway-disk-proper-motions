@@ -18,6 +18,7 @@ notebooks/*png
 # Include following
 !frames/B_star_pml_vs_galon.png
 !img/GaiaSky-colour-2k.png
+!img/Gaia_EDR3_flux_cartesian_2k.png
 !img/mw_payne_wardenaar*
 
 # Byte-compiled / optimized / DLL files
