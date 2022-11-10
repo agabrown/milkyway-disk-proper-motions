@@ -145,7 +145,7 @@ void setup() {
   
   saveStrings("../lines-ffmpeg.txt", ffmpegInstructions.toArray(new String[0]));
   
-  pmlVsLImg = loadImage("../img/B_star_pml_vs_galon.png");
+  pmlVsLImg = loadImage("../frames/B_star_pml_vs_galon.png");
   imageMode(CENTER);
 }
 

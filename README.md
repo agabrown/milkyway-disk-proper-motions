@@ -18,7 +18,7 @@ An [animated infographic](https://youtu.be/5b-eDLVHwrg) is made with which illus
 ## Reproducing the video
 
 1. Download the necessary data (see [this notebook](./notebooks/FitMWDiskKinModel.ipynb)).
-2. Run `python observational-plots.py -l` and then do `cp img/B_star_pml_vs_galon.png`
+2. Run `python observational-plots.py -l` and then do `cp img/B_star_pml_vs_galon.png frames/`
 3. Run `python intro-frames.py`
 4. Run the Processing script and do not forget to uncomment the line `saveFrame("../frames/frame-######.png");`. NOTE: this also generates a file `lines-ffmpeg.txt` (not stored on Github) which contains the timings and input text files for the captions with the Processing animation. It will be read by the bash-script below.
 5. Run `./makevideo.sh`
